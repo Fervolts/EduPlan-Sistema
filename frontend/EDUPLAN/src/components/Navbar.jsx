@@ -1,26 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import "./styles/Navb.css";
 
 const LogoutButton = ({ pathname }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const tipoUsuario = localStorage.getItem('tipoUsuario');
-    if (token) {
-      setIsLoggedIn(true);
-      setUserType(tipoUsuario);
-    }
-  }, []);
+  const { isLoggedIn, userType, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('tipoUsuario');
-    setIsLoggedIn(false);
-    setUserType(null);
+    logout();
     window.location.reload();
   };
 
@@ -64,7 +52,9 @@ function Navb() {
         <div className="nav-links">
           <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>
           <a href="/Modelos" className={`box ${location.pathname === '/Modelos' ? 'active' : ''}`}>Ve nuestro catalogo</a>
-          <a href="/comprar" className={`box ${location.pathname === '/comprar' ? 'active' : ''}`}>Formulario de Compra</a> 
+          <a href="/registroEstudiante" className={`box ${location.pathname === '/registroEstudiante' ? 'active' : ''}`}>Registro Estudiante</a>
+          <a href="/registroProfe" className={`box ${location.pathname === '/registroProfe' ? 'active' : ''}`}>Registro Profesor</a>
+          <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>
         </div>
         <div className="cajilla">
           <LogoutButton pathname={location.pathname} />

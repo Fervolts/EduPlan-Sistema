@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import  { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const [formulario, setFormulario] = useState({
@@ -11,6 +12,7 @@ const Login = () => {
   const [mensaje, setMensaje] = useState('');
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleChange = (event) => {
     setFormulario({
@@ -71,8 +73,7 @@ const Login = () => {
           throw new Error('Las credenciales no son válidas para ningún tipo de usuario.');
         }
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('tipoUsuario', tipoUsuario);
+        login(token, tipoUsuario); // Llamar a la función de login del contexto
 
         console.log('Usuario:', formulario.usuario);
         console.log('Token:', token);

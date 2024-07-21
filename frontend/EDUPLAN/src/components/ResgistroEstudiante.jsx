@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './styles/Comprar.css';
-// import Video1 from '../assets/Video.mp4';
+import './styles/Registros.css';
+import Video1 from '../assets/Video.mp4';
 
-const Comprar = () => {
+const RegistroEstudiante = () => {
   const [formulario, setFormulario] = useState({
     nombres: localStorage.getItem('username') || '',
     apellidos: '',
@@ -66,7 +66,7 @@ const Comprar = () => {
   return (
     <div className="card">
       <video autoPlay loop muted className="video">
-        {/* <source src={Video1} type="video/mp4" /> */}
+        {<source src={Video1} type="video/mp4" />}
       </video>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
@@ -104,11 +104,11 @@ const Comprar = () => {
           <input type="password" name="contrasena" value={formulario.contrasena} onChange={handleChange} className="input" />
           {errores.contrasena && <p className="error">{errores.contrasena}</p>}
         </label>
-        <button type="submit" className="button">Comprar</button>
+        <button type="submit" className="button">Registrar</button>
       </form>
       {formulario.enviado && <p className="success-message">Formulario enviado correctamente!</p>}
     </div>
   );
 };
 
-export default Comprar;
+export default RegistroEstudiante;
