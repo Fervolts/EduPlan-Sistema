@@ -7,6 +7,7 @@ import Modelos from './components/Modelos.jsx';
 import Register from './components/Register.jsx';
 import ResgistroEstudiante from './components/ResgistroEstudiante.jsx';
 import ListadoEstudiantes from './components/ListadoEstudiantes.jsx';
+import Evaluaciones from './components/Evaluaciones.jsx';
 import ListadoProf from './components/ListadoProf.jsx';
 import Pedidos from './components/Pedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx'
@@ -28,6 +29,7 @@ function App() {
         <Route path= "/registroProfe" element={<RegisProf />} />
         <Route path= "/listadoEstudiantes" element={<ListadoEstudiantes />} />
         <Route path= "/ListadoProf" element={<ListadoProf />} />
+        <Route path= "/evaluaciones" element={<Evaluaciones />} />
         <Route path= "/pedidos" element={<Pedidos />} />
       </Routes>
     </Router>

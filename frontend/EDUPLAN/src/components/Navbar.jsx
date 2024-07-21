@@ -56,6 +56,7 @@ return (
           <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>
         <a href="/listadoEstudiantes" className={`box ${location.pathname === '/listadoEstudiantes' ? 'active' : ''}`}>Listados de Estudiantes</a>
         <a href="/listadoProf" className={`box ${location.pathname === '/listadoProf' ? 'active' : ''}`}>Listados de Profesores</a>
+        <a href="/evaluaciones" className={`box ${location.pathname === '/evaluaciones' ? 'active' : ''}`}>Evaluaciones</a>
         </div>
         <div className="cajilla">
           <LogoutButton pathname={location.pathname} />

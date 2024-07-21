@@ -1,0 +1,43 @@
+.evaluaciones {
+    padding: 20px;
+  }
+  
+  .evaluaciones-list {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .column-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .evaluacion-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .no-evaluaciones {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .no-students {
+    margin-top: 50px;
+    text-align: center;
+    color: #666;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
