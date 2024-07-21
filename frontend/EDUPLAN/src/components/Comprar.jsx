@@ -37,7 +37,7 @@ const Comprar = () => {
     if (!formulario.correo_electronico.trim()) {
       errores.correo_electronico = "El campo correo electronico es obligatorio";
     }
-
+    
     setErrores(errores);
 
     fetch('http://localhost:3000/api/register/estudiante', {
@@ -66,7 +66,7 @@ const Comprar = () => {
   return (
     <div className="card">
       <video autoPlay loop muted className="video">
-        <source src={Video1} type="video/mp4" />
+        {/* <source src={Video1} type="video/mp4" /> */}
       </video>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">

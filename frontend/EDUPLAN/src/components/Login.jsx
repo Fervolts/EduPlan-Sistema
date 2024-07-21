@@ -1,97 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles/Login.css';
-
+import React, { useState } from 'react';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [error, setError] = useState('');
-    const [confirmation, setConfirmation] = useState(null);
+  const [formulario, setFormulario] = useState({
+    usuario: '',
+    contrasena: '',
+    tipoUsuario: 'estudiante' // Valor por defecto
+  });
 
-    const handleChange = event => {
-        const result = event.target.value.replace(/[^a-z]/gi, '');
-    
-        setUsername(result);}
+  const [errores, setErrores] = useState({});
+  const [mensaje, setMensaje] = useState('');
 
-    const navigate = useNavigate();
+  const handleChange = (event) => {
+    setFormulario({
+      ...formulario,
+      [event.target.name]: event.target.value
+    });
+  };
 
-    useEffect(() => {
-        const token = localStorage.getItem('sessionToken');
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, []);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setErrores({});
+    setMensaje('');
 
-    
-    const handleLogin = async (event) => {
-        event.preventDefault();
-    
-        if (!username || !password) {
-            setError('Por favor, rellena todos los campos.');
-            return;
-        }
-    
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, password: password })
-        };
-    
-        try {
-            const response = await fetch('http://localhost:3000/login', requestOptions);
-            const data = await response.json();
-    
-            if (data.success) {
-                console.log(data); 
-                localStorage.setItem('sessionToken', data.token);
-                localStorage.setItem('username', data.username); // Guarda el nombre de usuario
-                localStorage.setItem('user', data.user); // Guarda el valor 'user'
-                setIsLoggedIn(true);
-                setConfirmation('Inicio de sesión exitoso!'); // Mueve esta línea aquí
-                setTimeout(() => {
-                    setConfirmation(null); // Limpia el mensaje de confirmación después de 2 segundos
-                    navigate('/'); // Luego redirige a la página de inicio
-                }, 2000);
+    let errores = {};
 
-                    
-            }
-             else {
-                setError(data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error); 
-            setError('Error del servidor');
-        }
-    };
-    
-
-    const handleRegister = () => {
-        navigate('/register');
-    };
-
-    if (isLoggedIn) {
-        return <p className="_login-message">Ya estás logeado.</p>;
+    // Validaciones
+    if (!formulario.usuario.trim()) {
+      errores.usuario = "El campo usuario es obligatorio";
+    }
+    if (!formulario.contrasena.trim()) {
+      errores.contrasena = "El campo contraseña es obligatorio";
     }
 
-    return (
-        <div>
-       
+    setErrores(errores);
 
-            <div className="_login-container">
-                <h2 className="_login-title">Iniciar sesión</h2>
-                <form onSubmit={handleLogin} className="_login-form">
-                    <input type="text" value={username} onChange={e => {setUsername(e.target.value) ; handleChange(e)}} placeholder="Usuario" className="_login-input" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Contraseña" className="_login-input" />
-                    <input type="submit" value="Iniciar sesión" className="_login-submit" />
-                    <input type="button" className="registro" onClick={handleRegister} value="Registrarse" />
-                    {error && <p className="_login-error">{error}</p>}
-                    {confirmation && <div className="confirmation">{confirmation}</div>} {/* Muestra el mensaje de confirmación */}
+    if (Object.keys(errores).length === 0) {
+      // Determina la ruta según el tipo de usuario
+      const ruta = `http://localhost:3000/api/login/${formulario.tipoUsuario}`;
 
-                </form>
-            </div>
-        </div>
-    );
+      fetch(ruta, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario: formulario.usuario,
+          contrasena: formulario.contrasena
+        }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Success:', data);
+        // Aquí podrías guardar el token en localStorage o en un estado global
+        setMensaje('Login exitoso');
+        setFormulario({ usuario: '', contrasena: '', tipoUsuario: 'estudiante' });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setMensaje('Error al iniciar sesión');
+      });
+    }
+  };
+
+  return (
+    <div className="card">
+      <form className="form" onSubmit={handleSubmit}>
+        <label className="label">
+          Tipo de Usuario:
+          <select name="tipoUsuario" value={formulario.tipoUsuario} onChange={handleChange} className="input">
+            <option value="estudiante">Estudiante</option>
+            <option value="profesor">Profesor</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </label>
+        <label className="label">
+          Usuario:
+          <input type="text" name="usuario" value={formulario.usuario} onChange={handleChange} className="input" />
+          {errores.usuario && <p className="error">{errores.usuario}</p>}
+        </label>
+        <label className="label">
+          Contraseña:
+          <input type="password" name="contrasena" value={formulario.contrasena} onChange={handleChange} className="input" />
+          {errores.contrasena && <p className="error">{errores.contrasena}</p>}
+        </label>
+        <button type="submit" className="button">Iniciar Sesión</button>
+      </form>
+      {mensaje && <p className="success-message">{mensaje}</p>}
+    </div>
+  );
 };
+
 export default Login;
