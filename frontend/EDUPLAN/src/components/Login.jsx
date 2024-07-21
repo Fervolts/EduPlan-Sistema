@@ -5,7 +5,6 @@ const Login = () => {
   const [formulario, setFormulario] = useState({
     usuario: '',
     contrasena: '',
-    tipoUsuario: 'estudiante'
   });
 
   const [errores, setErrores] = useState({});
@@ -37,43 +36,59 @@ const Login = () => {
     setErrores(errores);
 
     if (Object.keys(errores).length === 0) {
-      const ruta = `http://localhost:3000/api/login/${formulario.tipoUsuario}`;
+      const rutas = [
+        `http://localhost:3000/api/login/estudiante`,
+        `http://localhost:3000/api/login/profesor`,
+        `http://localhost:3000/api/login/administrador`
+      ];
 
       try {
-        const response = await fetch(ruta, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            usuario: formulario.usuario,
-            contrasena: formulario.contrasena
-          }),
-        });
+        let data;
+        let token;
+        let tipoUsuario;
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        for (let ruta of rutas) {
+          const response = await fetch(ruta, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              usuario: formulario.usuario,
+              contrasena: formulario.contrasena
+            }),
+          });
+
+          if (response.ok) {
+            data = await response.json();
+            token = data.token;
+            tipoUsuario = data.tipoUsuario;
+            break; // Salir del bucle si una respuesta es exitosa
+          }
         }
 
-        const data = await response.json();
-        const token = data.token;
+        if (!token) {
+          throw new Error('Las credenciales no son válidas para ningún tipo de usuario.');
+        }
+
         localStorage.setItem('token', token);
-        localStorage.setItem('tipoUsuario', formulario.tipoUsuario); // Almacenar el tipo de usuario
+        localStorage.setItem('tipoUsuario', tipoUsuario);
 
         console.log('Usuario:', formulario.usuario);
         console.log('Token:', token);
         console.log('Login exitoso para el usuario:', formulario.usuario);
 
-        if (formulario.tipoUsuario === 'estudiante') {
+        // Redirigir basado en el tipo de usuario
+        if (tipoUsuario === 'estudiante') {
           navigate('/');
-        } else if (formulario.tipoUsuario === 'profesor') {
+        } else if (tipoUsuario === 'profesor') {
           navigate('/');
-        } else if (formulario.tipoUsuario === 'administrador') {
+        } else if (tipoUsuario === 'administrador') {
           navigate('/');
         }
 
         setMensaje('Login exitoso');
-        setFormulario({ usuario: '', contrasena: '', tipoUsuario: 'estudiante' });
+        setFormulario({ usuario: '', contrasena: '' });
       } catch (error) {
         console.error('Error:', error);
         setMensaje('Error al iniciar sesión');
@@ -84,14 +99,6 @@ const Login = () => {
   return (
     <div className="card">
       <form className="form" onSubmit={handleSubmit}>
-        <label className="label">
-          Tipo de Usuario:
-          <select name="tipoUsuario" value={formulario.tipoUsuario} onChange={handleChange} className="input">
-            <option value="estudiante">Estudiante</option>
-            <option value="profesor">Profesor</option>
-            <option value="administrador">Administrador</option>
-          </select>
-        </label>
         <label className="label">
           Usuario:
           <input type="text" name="usuario" value={formulario.usuario} onChange={handleChange} className="input" />
