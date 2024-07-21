@@ -31,12 +31,12 @@ router.use('/estudiantes', authenticateToken);
 router.get('/estudiantes', getEstudiantes);
 
 // Rutas protegidas para profesores
-router.use('/profesores', authenticateToken);
+router.use('/profesores', authenticateToken)
 router.get('/profesores', getProfesores);
 
 // Rutas para materias
 router.post('/materias', authenticateToken, createMateria);
-router.get('/materias', getMaterias);
+router.get('/materias', getMaterias)
 
 // Rutas para evaluaciones
 router.post('/evaluaciones/agg', authenticateToken, createEvaluacion);

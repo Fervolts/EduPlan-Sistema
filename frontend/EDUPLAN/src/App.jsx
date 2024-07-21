@@ -8,6 +8,8 @@ import Register from './components/Register.jsx';
 import Comprar from './components/Comprar.jsx';
 import Pedidos from './components/Pedidos.jsx';
 import MisPedidos from './components/MisPedidos.jsx';
+import RegisAdmin from './components/RegistroAdmin.jsx'
+import RegisProf from './components/RegistroProf.jsx'
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path= "/Modelos" element={<Modelos />} />
         <Route path= "/register" element={<Register />} />
         <Route path= "/comprar" element={<Comprar />} />
+        <Route path= "/registroAdmin" element={<RegisAdmin />} />
+        <Route path= "/registroProfe" element={<RegisProf />} />
         <Route path= "/pedidos" element={<Pedidos />} />
         <Route path= "/mispedidos" element={<MisPedidos />} />
       </Routes>
