@@ -49,7 +49,7 @@ const Comprar = () => {
     setErrores(errores);
 
     if (Object.keys(errores).length === 0) {
-      fetch('http://localhost:3000/compra', {
+      fetch('http://localhost:5000/api/register/estudiante', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const Comprar = () => {
     <form className="form" onSubmit={handleSubmit}>
         <label className="label">
             Nombres:
-            <input type="text" name="nombres" value={formulario.nombres} readOnly className="input" />
+            <input type="text" name="nombres" onChange={handleChange} className="input" />
             {errores.nombres && <p className="error">{errores.nombres}</p>}
         </label>
         <label className="label">
