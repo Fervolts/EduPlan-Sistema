@@ -37,9 +37,9 @@ const Login = () => {
 
     if (Object.keys(errores).length === 0) {
       const rutas = [
-        `http://localhost:3000/api/login/estudiante`,
-        `http://localhost:3000/api/login/profesor`,
-        `http://localhost:3000/api/login/administrador`
+        { tipo: 'estudiante', url: `http://localhost:3000/api/login/estudiante` },
+        { tipo: 'profesor', url: `http://localhost:3000/api/login/profesor` },
+        { tipo: 'administrador', url: `http://localhost:3000/api/login/administrador` }
       ];
 
       try {
@@ -48,7 +48,7 @@ const Login = () => {
         let tipoUsuario;
 
         for (let ruta of rutas) {
-          const response = await fetch(ruta, {
+          const response = await fetch(ruta.url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const Login = () => {
           if (response.ok) {
             data = await response.json();
             token = data.token;
-            tipoUsuario = data.tipoUsuario;
+            tipoUsuario = ruta.tipo; // Asignar tipoUsuario basado en la ruta exitosa
             break; // Salir del bucle si una respuesta es exitosa
           }
         }
@@ -76,16 +76,10 @@ const Login = () => {
 
         console.log('Usuario:', formulario.usuario);
         console.log('Token:', token);
+        console.log('Tipo de Usuario:', tipoUsuario);
         console.log('Login exitoso para el usuario:', formulario.usuario);
 
-        // Redirigir basado en el tipo de usuario
-        if (tipoUsuario === 'estudiante') {
-          navigate('/');
-        } else if (tipoUsuario === 'profesor') {
-          navigate('/');
-        } else if (tipoUsuario === 'administrador') {
-          navigate('/');
-        }
+        navigate('/');
 
         setMensaje('Login exitoso');
         setFormulario({ usuario: '', contrasena: '' });
