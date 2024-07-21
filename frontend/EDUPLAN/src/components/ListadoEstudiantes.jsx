@@ -51,7 +51,9 @@ const ListadoEstudiantes = () => {
             ))}
           </div>
         ) : (
-          <p>No hay estudiantes registrados</p>
+          <div className="no-students">
+            <p>No hay estudiantes registrados.</p>
+          </div>
         )}
       </div>
     </div>
