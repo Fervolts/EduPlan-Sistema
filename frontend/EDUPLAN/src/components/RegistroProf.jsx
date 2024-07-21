@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
-import './styles/Comprar.css';
-// import Video1 from '../assets/Video.mp4';
 
-const Comprar = () => {
+const RegistrarProfesor = () => {
   const [formulario, setFormulario] = useState({
-    nombres: localStorage.getItem('username') || '',
+    nombres: '',
     apellidos: '',
     correo_electronico: '',
-    documento_identidad: '',
-    numero_telefono: '',
     usuario: '',
-    contrasena: '',
-    estado: 'En espera',
-    enviado: false, 
+    contrasena: ''
   });
+
   const [errores, setErrores] = useState({});
+  const [mensaje, setMensaje] = useState('');
 
   const handleChange = (event) => {
     setFormulario({
@@ -25,9 +21,12 @@ const Comprar = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setErrores({});
+    setMensaje('');
 
     let errores = {};
 
+    // Validaciones
     if (!formulario.nombres.trim()) {
       errores.nombres = "El campo nombres es obligatorio";
     }
@@ -35,12 +34,24 @@ const Comprar = () => {
       errores.apellidos = "El campo apellidos es obligatorio";
     }
     if (!formulario.correo_electronico.trim()) {
-      errores.correo_electronico = "El campo correo electronico es obligatorio";
+      errores.correo_electronico = "El campo correo electrónico es obligatorio";
+    }
+    if (!formulario.usuario.trim()) {
+      errores.usuario = "El campo usuario es obligatorio";
+    }
+    if (!formulario.contrasena.trim()) {
+      errores.contrasena = "El campo contraseña es obligatorio";
+    } else if (formulario.contrasena.length < 6) {
+      errores.contrasena = "La contraseña debe tener al menos 6 caracteres";
     }
 
     setErrores(errores);
 
-    fetch('http://localhost:3000/api/register/estudiante', {
+    if (Object.keys(errores).length > 0) {
+      return;
+    }
+
+    fetch('http://localhost:3000/api/register/profesor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,25 +60,25 @@ const Comprar = () => {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        return response.json().then(error => {
+          throw new Error(error.error || 'Error en la solicitud');
+        });
       }
       return response.json();
     })
     .then(data => {
       console.log('Success:', data);
-      setFormulario({ ...formulario, enviado: true });
-      setTimeout(() => window.location.reload(), 2000);
+      setMensaje('Profesor registrado exitosamente');
+      setFormulario({ nombres: '', apellidos: '', correo_electronico: '', usuario: '', contrasena: '' });
     })
     .catch((error) => {
       console.error('Error:', error);
+      setMensaje('Error al registrar profesor');
     });
   };
 
   return (
     <div className="card">
-      <video autoPlay loop muted className="video">
-        <source src={Video1} type="video/mp4" />
-      </video>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
           Nombres:
@@ -75,24 +86,14 @@ const Comprar = () => {
           {errores.nombres && <p className="error">{errores.nombres}</p>}
         </label>
         <label className="label">
-          Apellido:
+          Apellidos:
           <input type="text" name="apellidos" value={formulario.apellidos} onChange={handleChange} className="input" />
           {errores.apellidos && <p className="error">{errores.apellidos}</p>}
         </label>
         <label className="label">
-          Correo electrónico:
+          Correo Electrónico:
           <input type="email" name="correo_electronico" value={formulario.correo_electronico} onChange={handleChange} className="input" />
           {errores.correo_electronico && <p className="error">{errores.correo_electronico}</p>}
-        </label>
-        <label className="label">
-          Documento Identidad:
-          <input type="text" name="documento_identidad" value={formulario.documento_identidad} onChange={handleChange} className="input" />
-          {errores.documento_identidad && <p className="error">{errores.documento_identidad}</p>}
-        </label>
-        <label className="label">
-          Número teléfono:
-          <input type="text" name="numero_telefono" value={formulario.numero_telefono} onChange={handleChange} className="input" />
-          {errores.numero_telefono && <p className="error">{errores.numero_telefono}</p>}
         </label>
         <label className="label">
           Usuario:
@@ -104,11 +105,11 @@ const Comprar = () => {
           <input type="password" name="contrasena" value={formulario.contrasena} onChange={handleChange} className="input" />
           {errores.contrasena && <p className="error">{errores.contrasena}</p>}
         </label>
-        <button type="submit" className="button">Comprar</button>
+        <button type="submit" className="button">Registrar</button>
       </form>
-      {formulario.enviado && <p className="success-message">Formulario enviado correctamente!</p>}
+      {mensaje && <p className="success-message">{mensaje}</p>}
     </div>
   );
 };
 
-export default Comprar;
+export default RegistrarProfesor;
