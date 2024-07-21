@@ -5,7 +5,7 @@ import Login from './components/Login.jsx';
 import Navb from './components/Navbar.jsx';
 import Modelos from './components/Modelos.jsx';
 import Register from './components/Register.jsx';
-import Comprar from './components/Comprar.jsx';
+import ResgistroEstudiante from './components/ResgistroEstudiante.jsx';
 import Pedidos from './components/Pedidos.jsx';
 import MisPedidos from './components/MisPedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx'
@@ -20,7 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path= "/Modelos" element={<Modelos />} />
         <Route path= "/register" element={<Register />} />
-        <Route path= "/comprar" element={<Comprar />} />
+        <Route path= "/registroEstudiante" element={<ResgistroEstudiante />} />
         <Route path= "/registroAdmin" element={<RegisAdmin />} />
         <Route path= "/registroProfe" element={<RegisProf />} />
         <Route path= "/pedidos" element={<Pedidos />} />
