@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/Listado.css';
-import defaultProfilePic from './assets/default-profile-pic2.jpg';
+import defaultProfilePic from '../assets/default-profile-pic2.png';
 
 const API_URL = 'http://localhost:3000/api';
 
