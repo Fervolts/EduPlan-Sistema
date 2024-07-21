@@ -58,18 +58,18 @@ function Navb() {
 
     return (
         <header className={navbar ? "nav flex" : "header flex"}>
-            <h1 className="title">Cars in Stock</h1>
+            <h1 className="title">EduPlan</h1>
             <nav className={isOpen ? "nav-open" : ""}>
                 <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>
                 <a href="/Modelos" className={`box ${location.pathname === '/Modelos' ? 'active' : ''}`}>Ve nuestro catalogo</a>
-                <a href="/comprar" className={`box ${location.pathname === '/comprar' ? 'active' : ''}`}>Formulario de Compra</a>
-                <LogoutButton className="box" pathname={location.pathname} />
+                <a href="/comprar" className={`box ${location.pathname === '/comprar' ? 'active' : ''}`}>Formulario de Compra</a>  
+            </nav>
+            <LogoutButton className="box" pathname={location.pathname} />
                 <button
                     className="nav-btn nav-close-btn"
                     onClick={() => setIsOpen(false)}>
                     <FaTimes />
-                </button>    
-            </nav>
+                </button>  
             <button
                 className="nav-btn"
                 onClick={() => setIsOpen(true)}>
