@@ -32,6 +32,7 @@ function Navb() {
   const [navbar, setNav] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const {userType } = useContext(AuthContext);
 
   const changeBackground = () => {
     if (window.scrollY >= 800) {
@@ -50,12 +51,12 @@ return (
       <h1 className="title">EduPlan</h1>
       <nav className={isOpen ? "nav-open" : "navcito"}>
         <div className="nav-links">
-          <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>
-          <a href="/registroEstudiante" className={`box ${location.pathname === '/registroEstudiante' ? 'active' : ''}`}>Registro Estudiante</a>
-          <a href="/registroProfe" className={`box ${location.pathname === '/registroProfe' ? 'active' : ''}`}>Registro Profesor</a>
-          <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>
-        <a href="/listadoEstudiantes" className={`box ${location.pathname === '/listadoEstudiantes' ? 'active' : ''}`}>Listados de Estudiantes</a>
-        <a href="/listadoProf" className={`box ${location.pathname === '/listadoProf' ? 'active' : ''}`}>Listados de Profesores</a>
+          {userType === 'administrador' && <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>}
+          {userType === 'administrador' && <a href="/registroEstudiante" className={`box ${location.pathname === '/registroEstudiante' ? 'active' : ''}`}>Registro Estudiante</a>}
+          {userType === 'administrador' && <a href="/registroProfe" className={`box ${location.pathname === '/registroProfe' ? 'active' : ''}`}>Registro Profesor</a>}
+          {userType === 'administrador' && <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>}
+          {userType === 'administrador' && <a href="/listadoEstudiantes" className={`box ${location.pathname === '/listadoEstudiantes' ? 'active' : ''}`}>Listados de Estudiantes</a>}
+          {userType === 'administrador' && <a href="/listadoProf" className={`box ${location.pathname === '/listadoProf' ? 'active' : ''}`}>Listados de Profesores</a>}
         </div>
         <div className="cajilla">
           <LogoutButton pathname={location.pathname} />

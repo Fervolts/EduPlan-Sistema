@@ -12,6 +12,10 @@ import Pedidos from './components/Pedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx'
 import RegisProf from './components/RegistroProf.jsx'
 import { AuthProvider } from './context/AuthContext.jsx';
+import { SortedRoute, SortedRouteAdmin, SortedRouteProf } from './context/SortedRoute.jsx';
+import { useContext } from 'react';
+import { AuthContext } from './context/AuthContext.jsx';
+
 
 function App() {
   return (
@@ -20,14 +24,41 @@ function App() {
       <Navb />
       <Routes>
         <Route path="/" element={<Inicio />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={
+          <SortedRoute>
+          <Login />
+          </SortedRoute>
+          } />
         <Route path= "/Modelos" element={<Modelos />} />
         <Route path= "/register" element={<Register />} />
-        <Route path= "/registroEstudiante" element={<ResgistroEstudiante />} />
-        <Route path= "/registroAdmin" element={<RegisAdmin />} />
-        <Route path= "/registroProfe" element={<RegisProf />} />
-        <Route path= "/listadoEstudiantes" element={<ListadoEstudiantes />} />
-        <Route path= "/ListadoProf" element={<ListadoProf />} />
+        <Route path= "/registroEstudiante" element={
+          <SortedRouteAdmin>
+          <ResgistroEstudiante />
+          </SortedRouteAdmin>
+          } />
+
+        <Route path= "/registroAdmin" element={
+
+          <SortedRouteAdmin>
+            <RegisAdmin />
+          </SortedRouteAdmin>                                     } />
+          
+        <Route path= "/registroProfe" element={
+          
+          <SortedRouteAdmin>
+          <RegisProf /> 
+          </SortedRouteAdmin>        } />
+
+        <Route path= "/listadoEstudiantes" element={
+          <SortedRouteProf>
+          <ListadoEstudiantes />
+          </SortedRouteProf>
+          } />
+        <Route path= "/ListadoProf" element={
+        <SortedRouteAdmin> 
+        <ListadoProf />
+        </SortedRouteAdmin> 
+        } />
         <Route path= "/pedidos" element={<Pedidos />} />
       </Routes>
     </Router>
