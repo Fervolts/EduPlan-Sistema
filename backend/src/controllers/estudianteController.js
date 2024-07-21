@@ -60,3 +60,22 @@ exports.createEstudiante = async (req, res) => {
       res.status(400).json({ error: error.message });
     }
   };
+
+  exports.deleteEstudiante = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      // Verificar si el estudiante existe
+      const estudiante = await Estudiante.findByPk(id);
+      if (!estudiante) {
+        return res.status(404).json({ error: 'Estudiante no encontrado' });
+      }
+  
+      // Eliminar el estudiante
+      await estudiante.destroy();
+      res.status(200).json({ mensaje: 'Estudiante eliminado exitosamente' });
+    } catch (error) {
+      console.error('Error al eliminar estudiante:', error);
+      res.status(400).json({ error: 'Error al eliminar el estudiante' });
+    }
+  };

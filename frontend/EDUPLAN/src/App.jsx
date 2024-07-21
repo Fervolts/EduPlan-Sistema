@@ -8,12 +8,13 @@ import Register from './components/Register.jsx';
 import ResgistroEstudiante from './components/ResgistroEstudiante.jsx';
 import ListadoEstudiantes from './components/ListadoEstudiantes.jsx';
 import Pedidos from './components/Pedidos.jsx';
-import MisPedidos from './components/MisPedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx'
 import RegisProf from './components/RegistroProf.jsx'
+import { AuthProvider } from './context/AuthContext.jsx';
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <Navb />
       <Routes>
@@ -26,9 +27,9 @@ function App() {
         <Route path= "/registroProfe" element={<RegisProf />} />
         <Route path= "/listadoEstudiantes" element={<ListadoEstudiantes />} />
         <Route path= "/pedidos" element={<Pedidos />} />
-        <Route path= "/mispedidos" element={<MisPedidos />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

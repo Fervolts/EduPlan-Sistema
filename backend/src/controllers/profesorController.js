@@ -47,3 +47,22 @@ exports.createProfesor = async (req, res) => {
       res.status(400).json({ error: error.message });
     }
   };
+
+  exports.deleteProfesor = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      // Verificar si el profesor existe
+      const profesor = await Profesor.findByPk(id);
+      if (!profesor) {
+        return res.status(404).json({ error: 'Profesor no encontrado' });
+      }
+  
+      // Eliminar el profesor
+      await profesor.destroy();
+      res.status(200).json({ mensaje: 'Profesor eliminado exitosamente' });
+    } catch (error) {
+      console.error('Error al eliminar profesor:', error);
+      res.status(500).json({ error: 'Error al eliminar el profesor' });
+    }
+  };

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import  { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const [formulario, setFormulario] = useState({
@@ -11,6 +12,7 @@ const Login = () => {
   const [mensaje, setMensaje] = useState('');
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleChange = (event) => {
     setFormulario({
@@ -37,9 +39,9 @@ const Login = () => {
 
     if (Object.keys(errores).length === 0) {
       const rutas = [
-        `http://localhost:3000/api/login/estudiante`,
-        `http://localhost:3000/api/login/profesor`,
-        `http://localhost:3000/api/login/administrador`
+        { tipo: 'estudiante', url: `http://localhost:3000/api/login/estudiante` },
+        { tipo: 'profesor', url: `http://localhost:3000/api/login/profesor` },
+        { tipo: 'administrador', url: `http://localhost:3000/api/login/administrador` }
       ];
 
       try {
@@ -48,7 +50,7 @@ const Login = () => {
         let tipoUsuario;
 
         for (let ruta of rutas) {
-          const response = await fetch(ruta, {
+          const response = await fetch(ruta.url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -62,7 +64,7 @@ const Login = () => {
           if (response.ok) {
             data = await response.json();
             token = data.token;
-            tipoUsuario = data.tipoUsuario;
+            tipoUsuario = ruta.tipo; // Asignar tipoUsuario basado en la ruta exitosa
             break; // Salir del bucle si una respuesta es exitosa
           }
         }
@@ -71,21 +73,14 @@ const Login = () => {
           throw new Error('Las credenciales no son válidas para ningún tipo de usuario.');
         }
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('tipoUsuario', tipoUsuario);
+        login(token, tipoUsuario); // Llamar a la función de login del contexto
 
         console.log('Usuario:', formulario.usuario);
         console.log('Token:', token);
+        console.log('Tipo de Usuario:', tipoUsuario);
         console.log('Login exitoso para el usuario:', formulario.usuario);
 
-        // Redirigir basado en el tipo de usuario
-        if (tipoUsuario === 'estudiante') {
-          navigate('/');
-        } else if (tipoUsuario === 'profesor') {
-          navigate('/');
-        } else if (tipoUsuario === 'administrador') {
-          navigate('/');
-        }
+        navigate('/');
 
         setMensaje('Login exitoso');
         setFormulario({ usuario: '', contrasena: '' });
