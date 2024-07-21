@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/Comprar.css';
-import Video1 from '../assets/CArrito.mp4';
+import Video1 from '../assets/Video.mp4';
 const Comprar = () => {
   const [modelos, setModelos] = useState([]);
   const [formulario, setFormulario] = useState({
