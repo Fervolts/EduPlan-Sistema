@@ -43,6 +43,7 @@ npm install
 
 cd backend
 node app.js
+```
 
 ### 4. Acceder a la aplicación
 http://localhost:5173
