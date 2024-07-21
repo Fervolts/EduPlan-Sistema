@@ -1,32 +1,49 @@
 # Sistema de Gestión Universitario
 
-## Resumen
+## Requisitos
 
-Este proyecto es un Sistema de Gestión Universitario diseñado para gestionar las notas y evaluaciones de los estudiantes. El sistema está construido utilizando Vite + React para el frontend, MySQL para la base de datos y Express para la API del backend.
+Para instalar y ejecutar la página web, se necesitan los siguientes requisitos:
 
-## Características
-
-- Gestión de estudiantes
-- Gestión de notas y evaluaciones
-- Autenticación y autorización de usuarios
-- Diseño responsivo
-
-## Tecnologías Utilizadas
-
-- **Frontend**: Vite, React
-- **Backend**: Node.js, Express
-- **Base de datos**: MySQL
-
-## Requisitos Previos
-
-Antes de comenzar, asegúrate de cumplir con los siguientes requisitos:
-
-- Node.js y npm instalados
-- Servidor MySQL en funcionamiento
-- Git instalado
+- **Node.js** v18.0.0 o superior
+- **NPM** v8.1.2 o superior
+- **MySQL** v8.0.28 o superior
+- **XAMPP** v7.4.17 o superior
 
 ## Instalación
 
-Sigue estos pasos para instalar y configurar el proyecto:
+Para instalar y configurar el proyecto, sigue estos pasos:
 
-### 1. Clonar el Repositorio
+### 1. Instalar Node.js y NPM
+
+Descarga e instala Node.js desde la [página oficial](https://nodejs.org/). NPM se instalará automáticamente junto con Node.js.
+
+### 2. Instalar MySQL y XAMPP
+
+Descarga e instala MySQL y XAMPP desde la [página oficial de XAMPP](https://www.apachefriends.org/index.html). Asegúrate de que MySQL está funcionando en tu servidor local.
+
+### 3. Clonar el Repositorio
+
+Clona el repositorio desde GitHub:
+
+```bash
+git clone https://github.com/Fervolts/EduPlan-Sistema.git
+cd EduPlan-Sistema
+
+# Para el frontend
+cd frontend/EDUPLAN
+npm install
+
+cd frontend/EDUPLAN
+npm run dev
+
+
+# Para el backend
+cd ../../backend
+npm install
+
+cd backend
+node app.js
+
+### 4. Acceder a la aplicación
+http://localhost:5173
+
