@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { InstagramEmbed } from 'react-social-media-embed';
 import Logo from '../assets/Logo.png';
-import Camp from '../assets/campaña 12.png'
 import '../inicio.css';
 function Inicio() {
 
