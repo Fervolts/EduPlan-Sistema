@@ -7,7 +7,6 @@ import Modelos from './components/Modelos.jsx';
 import Register from './components/Register.jsx';
 import ResgistroEstudiante from './components/ResgistroEstudiante.jsx';
 import Pedidos from './components/Pedidos.jsx';
-import MisPedidos from './components/MisPedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx'
 import RegisProf from './components/RegistroProf.jsx'
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -26,7 +25,6 @@ function App() {
         <Route path= "/registroAdmin" element={<RegisAdmin />} />
         <Route path= "/registroProfe" element={<RegisProf />} />
         <Route path= "/pedidos" element={<Pedidos />} />
-        <Route path= "/mispedidos" element={<MisPedidos />} />
       </Routes>
     </Router>
     </AuthProvider>
