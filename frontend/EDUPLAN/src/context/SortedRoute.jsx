@@ -36,7 +36,15 @@ export const SortedRouteProf = ({ children }) => {
 export const SortedRouteEst = ({ children }) => {
 
     if (tipoUsuario !== 'estudiante') {
-        window.location.href = '/';
+        return <Navigate to="/" />;
     }
 
+    return children}
+
+export const SortedRouteusers = ({ children }) => {
+
+    if (tipoUsuario !== 'administrador' || 'profesor' ||'estudiante') {
+
+        return <Navigate to="/" />;
+    }    
     return children}
