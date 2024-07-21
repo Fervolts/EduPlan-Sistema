@@ -33,9 +33,9 @@ const LogoutButton = ({ pathname }) => {
         <div>
             {userType === 'adm' && <a href="/pedidos" className="nav-link">Pedidos</a>}
             {userType === '' && <a href="/mispedidos" className="nav-link">Mis Pedidos</a>}
-            <button className="nav-link logout-button" onClick={handleLogout}>Cerrar sesión</button>
+            <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div> :
-        <button className={`nav-link login-button ${pathname === '/login' ? 'active' : ''}`} onClick={handleLogin}>Iniciar sesión</button>
+        <button className={`login-button boxLog ${pathname === '/login' ? 'active' : ''}`} onClick={handleLogin}>Iniciar sesión</button>
     );
 };
 
@@ -59,17 +59,21 @@ function Navb() {
     return (
         <header className={navbar ? "nav flex" : "header flex"}>
             <h1 className="title">EduPlan</h1>
-            <nav className={isOpen ? "nav-open" : ""}>
+            <nav className={isOpen ? "nav-open" : "navcito"}>
+                <div className="nav-links">
                 <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>
                 <a href="/Modelos" className={`box ${location.pathname === '/Modelos' ? 'active' : ''}`}>Ve nuestro catalogo</a>
-                <a href="/comprar" className={`box ${location.pathname === '/comprar' ? 'active' : ''}`}>Formulario de Compra</a>  
-            </nav>
-            <LogoutButton className="box" pathname={location.pathname} />
+                <a href="/comprar" className={`box ${location.pathname === '/comprar' ? 'active' : ''}`}>Formulario de Compra</a> 
+                </div>
+               <div className="cajilla">
+                <LogoutButton pathname={location.pathname} />
                 <button
                     className="nav-btn nav-close-btn"
                     onClick={() => setIsOpen(false)}>
                     <FaTimes />
-                </button>  
+                </button>   
+                </div>
+            </nav>
             <button
                 className="nav-btn"
                 onClick={() => setIsOpen(true)}>

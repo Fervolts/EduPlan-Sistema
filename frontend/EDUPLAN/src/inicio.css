@@ -3,6 +3,7 @@
 html body {
     background-color: rgb(17, 15, 15);
     height: 100vh;
+    overflow: hidden;
 }
 
 html::-webkit-scrollbar {
@@ -13,62 +14,61 @@ html::-webkit-scrollbar {
 .ImageFondo{
     display: flex;
     justify-content: center;
-    width: 25%;
-    height: 55%;
-    top: 24%;
-    left: 37.5%;
+    align-items: center;
     position: absolute;
     z-index: -9999;
 }
 
 .Caja{
-    display: flex;
-    height: auto;
-    width: 100%;
     height: 100%;
+    width: 100%;
+    display: flex;
     flex-direction: row;
-    justify-content:space-evenly;
+    justify-content:space-around;
     align-items: center;
+
 }
 
 .section{
-    z-index: 8888;
-    width:50%;
-    ;
+     ;
 }
 
 .section2{
-    z-index: 8888;
-    width:50%;
-    height: 30% ;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 0 200px;
-    background-color: rgba(131, 120, 120, 0.213);
-    border-radius: 40px;
-    text-shadow: black 0.1em 0.1em 0.2em;
+    background-color: rgba(131, 120, 120, 0.213);   
+    border-radius: 20px;
 }
 
+.inside{
+    max-width: 700px;
+  
+}
 
-h1{
+.fotico2{
+    background-size:cover;
+    background-image: url('./assets/campaña 12.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 500px;
+    width: 400px;
+}
+
+.titulito{
     color: white;
     font-size: 4rem;
     font-family: 'Arvo', serif;
     margin-top: 1rem;}
 
-p{
+.parrafo{
     color: white;
     font-size: 1rem;
     font-family: 'Arvo', serif;
-    margin-top: 1rem;
-    margin-bottom: 1rem;}
+    margin: auto
+}
 
 
 @media screen and (max-width: 900px) {
@@ -77,11 +77,11 @@ p{
     }
 
 
-    h1{
+    .titulito{
         font-size: 3rem;
     }
 
-    p{
+    .parrafo{
         font-size: 0.8rem;
     }
     
@@ -93,11 +93,11 @@ p{
         padding: 0 50px;
     }
 
-    h1{
+    .titulito{
         font-size: 3rem;
     }
 
-    p{
+    .parrafo{
         font-size: 1rem;
     }
 
@@ -109,11 +109,11 @@ p{
         padding: 1px;
     }
 
-    h1{
+    .titulito{
         font-size: 2rem;
     }
 
-    p{
+    .parrafo{
         font-size: 0.8rem;
     }
 }
@@ -124,11 +124,11 @@ p{
         padding: 1px;
     }
 
-    h1{
+    .titulito{
         font-size: 1rem;
     }
 
-    p{
+    .parrafo{
         font-size: 0.5rem;
     }
 }
