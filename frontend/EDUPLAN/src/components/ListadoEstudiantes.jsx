@@ -11,9 +11,25 @@ const ListadoEstudiantes = () => {
   }, []);
 
   const fetchEstudiantes = async () => {
-    let res = await fetch(`${API_URL}/estudiantes`);
-    let data = await res.json();
-    setEstudiantes(data);
+    try {
+      // Suponiendo que el token se guarda en localStorage después del inicio de sesión
+      const token = localStorage.getItem('token'); 
+      
+      let res = await fetch(`${API_URL}/estudiantes`, {
+        headers: {
+          'Authorization': `Bearer ${token}` // Enviar el token en el encabezado Authorization
+        }
+      });
+  
+      if (!res.ok) {
+        throw new Error('No autorizado');
+      }
+  
+      let data = await res.json();
+      setEstudiantes(data);
+    } catch (error) {
+      console.error('Error al obtener estudiantes:', error);
+    }
   };
 
   return (
