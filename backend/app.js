@@ -3,6 +3,14 @@ const app = express();
 const sequelize = require('./src/config/database');
 const routes = require('./src/routes/routes');
 require('dotenv').config();
+const cors = require('cors');
+
+// Configurar CORS
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 app.use('/api', routes);
