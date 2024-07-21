@@ -15,8 +15,7 @@ function Inicio() {
         <div className= 'inside'>
           <h1 className='titulito'>Bienvenidos</h1>
           <p className='parrafo'>
-            Los autos deportivos son un estilo de vida que se basa en el uso de
-            tecnología para mejorar la velocidad, la eficiencia y la seguridad.
+            El estudio es la cuna del éxito.
           </p>
         </div>
       </div>
