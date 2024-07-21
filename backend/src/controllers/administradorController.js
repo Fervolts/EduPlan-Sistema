@@ -41,3 +41,22 @@ exports.getAdministradores = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.deleteAdministrador = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verificar si el administrador existe
+    const administrador = await Administrador.findByPk(id);
+    if (!administrador) {
+      return res.status(404).json({ error: 'Administrador no encontrado' });
+    }
+
+    // Eliminar el administrador
+    await administrador.destroy();
+    res.status(200).json({ mensaje: 'Administrador eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error al eliminar administrador:', error);
+    res.status(500).json({ error: 'Error al eliminar el administrador' });
+  }
+};
