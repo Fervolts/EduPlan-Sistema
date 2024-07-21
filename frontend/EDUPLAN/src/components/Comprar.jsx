@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './styles/Comprar.css';
-// import Video1 from '../assets/Video.mp4';
+import Video1 from '../assets/Video.mp4';
 
 const Comprar = () => {
   const [formulario, setFormulario] = useState({
@@ -66,7 +66,7 @@ const Comprar = () => {
   return (
     <div className="card">
       <video autoPlay loop muted className="video">
-        {/* <source src={Video1} type="video/mp4" /> */}
+        {<source src={Video1} type="video/mp4" />}
       </video>
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
