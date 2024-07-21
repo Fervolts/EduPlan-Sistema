@@ -70,6 +70,7 @@ function Navb() {
                 <a href="/registroEstudiante" className={`box ${location.pathname === '/registroEstudiante' ? 'active' : ''}`}>Registro Estudiante</a>
                 <a href="/registroProfe" className={`box ${location.pathname === '/registroProfe' ? 'active' : ''}`}>Registro Profesor</a>
                 <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>
+                <a href="/listadoEstudiantes" className={`box ${location.pathname === '/listadoEstudiantes' ? 'active' : ''}`}>Listados de Estudiantes</a>
                 </div>
                <div className="cajilla">
                 <LogoutButton pathname={location.pathname} />
