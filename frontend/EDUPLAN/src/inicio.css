@@ -29,9 +29,6 @@ html::-webkit-scrollbar {
 
 }
 
-.section{
-     ;
-}
 
 .section2{
     display: flex;
@@ -44,7 +41,7 @@ html::-webkit-scrollbar {
 }
 
 .inside{
-    max-width: 700px;
+    max-width: 300vh;
   
 }
 
@@ -119,6 +116,8 @@ html::-webkit-scrollbar {
 }
 
 @media screen and (max-width: 380px){
+    html{
+        overflow: hidden;}
 
     .section{
         padding: 1px;
