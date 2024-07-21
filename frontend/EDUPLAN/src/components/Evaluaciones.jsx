@@ -66,7 +66,7 @@ const ListadoEvaluaciones = () => {
   return (
     <div className="evaluaciones">
       <div className="evaluaciones-list">
-        <h2>Lista de Evaluaciones</h2>
+        <h2 className="titulo-evaluaciones">Lista de Evaluaciones</h2>
         {loading ? (
           <p>Cargando...</p>
         ) : (

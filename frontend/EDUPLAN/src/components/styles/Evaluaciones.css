@@ -12,6 +12,13 @@
     max-width: 1200px;
   }
   
+  .titulo-evaluaciones {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
   .column-container {
     display: flex;
     flex-direction: column;
