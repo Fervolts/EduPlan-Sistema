@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/Listado.css';
-
+import defaultProfilePic from '../assets/default-profile-pic.png';
 const API_URL = 'http://localhost:3000/api';
 
 const ListadoEstudiantes = () => {
@@ -21,13 +21,19 @@ const ListadoEstudiantes = () => {
       <div className="students-list">
         <h2>Lista de Estudiantes</h2>
         {estudiantes.length > 0 ? (
-          <ul>
+          <div className="card-container">
             {estudiantes.map(estudiante => (
-              <li key={estudiante.id_estudiante}>
-                {estudiante.nombres} {estudiante.apellidos} - {estudiante.documento_identidad} - {estudiante.correo_electronico}
-              </li>
+              <div key={estudiante.id_estudiante} className="student-card">
+                <img src={defaultProfilePic} alt="Profile" className="profile-pic" />
+                <div className="card-details">
+                  <h3>{estudiante.nombres} {estudiante.apellidos}</h3>
+                  <p><strong>ID:</strong> {estudiante.documento_identidad}</p>
+                  <p><strong>Email:</strong> {estudiante.correo_electronico}</p>
+                  <p><strong>Teléfono:</strong> {estudiante.numero_telefono}</p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>No hay estudiantes registrados</p>
         )}
