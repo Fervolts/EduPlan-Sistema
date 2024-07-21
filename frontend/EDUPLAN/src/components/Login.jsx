@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formulario, setFormulario] = useState({
     usuario: '',
     contrasena: '',
-    tipoUsuario: 'estudiante' // Valor por defecto
+    tipoUsuario: 'estudiante'
   });
 
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
+
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormulario({
@@ -17,14 +20,13 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setErrores({});
     setMensaje('');
 
     let errores = {};
 
-    // Validaciones
     if (!formulario.usuario.trim()) {
       errores.usuario = "El campo usuario es obligatorio";
     }
@@ -35,35 +37,43 @@ const Login = () => {
     setErrores(errores);
 
     if (Object.keys(errores).length === 0) {
-      // Determina la ruta según el tipo de usuario
       const ruta = `http://localhost:3000/api/login/${formulario.tipoUsuario}`;
 
-      fetch(ruta, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          usuario: formulario.usuario,
-          contrasena: formulario.contrasena
-        }),
-      })
-      .then(response => {
+      try {
+        const response = await fetch(ruta, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            usuario: formulario.usuario,
+            contrasena: formulario.contrasena
+          }),
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Success:', data);
-        // Aquí podrías guardar el token en localStorage o en un estado global
+
+        const data = await response.json();
+        const token = data.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('tipoUsuario', formulario.tipoUsuario); // Almacenar el tipo de usuario
+
+        if (formulario.tipoUsuario === 'estudiante') {
+          navigate('/');
+        } else if (formulario.tipoUsuario === 'profesor') {
+          navigate('/');
+        } else if (formulario.tipoUsuario === 'administrador') {
+          navigate('/');
+        }
+
         setMensaje('Login exitoso');
         setFormulario({ usuario: '', contrasena: '', tipoUsuario: 'estudiante' });
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error:', error);
         setMensaje('Error al iniciar sesión');
-      });
+      }
     }
   };
 

@@ -8,8 +8,8 @@ const LogoutButton = ({ pathname }) => {
     const [userType, setUserType] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('sessionToken');
-        const user = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('tipoUsuario');
         if (token) {
             setIsLoggedIn(true);
             setUserType(user);
@@ -17,8 +17,8 @@ const LogoutButton = ({ pathname }) => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('sessionToken');
-        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('tipoUsuario');
         setIsLoggedIn(false);
         setUserType(null);
         window.location.reload(); 
@@ -31,8 +31,12 @@ const LogoutButton = ({ pathname }) => {
     return (
         isLoggedIn ? 
         <div>
-            {userType === 'adm' && <a href="/pedidos" className="nav-link">Pedidos</a>}
-            {userType === '' && <a href="/mispedidos" className="nav-link">Mis Pedidos</a>}
+            {userType === 'administrador' && <a href="/rutaAdmin1" className="nav-link">Ruta Admin 1</a>}
+
+            {userType === 'profesor' && <a href="/rutaProfesor1" className="nav-link">Ruta Profesor 1</a>}
+
+            {userType === 'estudiante' && <a href="/rutaEstudiante1" className="nav-link">Ruta Estudiante 1</a>}
+
             <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div> :
         <button className={`login-button boxLog ${pathname === '/login' ? 'active' : ''}`} onClick={handleLogin}>Iniciar sesión</button>
