@@ -60,6 +60,10 @@ const Login = () => {
         localStorage.setItem('token', token);
         localStorage.setItem('tipoUsuario', formulario.tipoUsuario); // Almacenar el tipo de usuario
 
+        console.log('Usuario:', formulario.usuario);
+        console.log('Token:', token);
+        console.log('Login exitoso para el usuario:', formulario.usuario);
+
         if (formulario.tipoUsuario === 'estudiante') {
           navigate('/');
         } else if (formulario.tipoUsuario === 'profesor') {
