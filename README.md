@@ -21,6 +21,8 @@ Descarga e instala Node.js desde la [página oficial](https://nodejs.org/). NPM 
 
 Descarga e instala MySQL y XAMPP desde la [página oficial de XAMPP](https://www.apachefriends.org/index.html). Asegúrate de que MySQL está funcionando en tu servidor local.
 
+Deberas de importar el archivo .sql que se encuentra en el main
+
 ### 3. Clonar el Repositorio
 
 Clona el repositorio desde GitHub:
@@ -38,11 +40,11 @@ npm run dev
 
 
 # Para el backend
-cd ../../backend
-npm install
+cd backend
+npm install -y
 
 cd backend
-node app.js
+npm run dev
 ```
 
 ### 4. Acceder a la aplicación
