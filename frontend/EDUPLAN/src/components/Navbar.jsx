@@ -45,8 +45,7 @@ function Navb() {
       { path: '/listadoEstudiantes', label: 'Listado Estudiantes' },
       // Rutas para el profesor
     ],
-    estudiante: [
-      { path: '/estudiante', label: 'Estudiante Dashboard' },
+    estudiante: [,
       { path: '/evaluaciones', label: 'Evaluaciones' },
       // Rutas para el estudiante
     ],
