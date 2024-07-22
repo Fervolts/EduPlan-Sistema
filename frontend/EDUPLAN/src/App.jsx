@@ -3,12 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Inicio from './components/Inicio.jsx';
 import Login from './components/Login.jsx';
 import Navb from './components/Navbar.jsx';
-import Modelos from './components/Modelos.jsx';
 import Evaluaciones from './components/Evaluaciones.jsx';
 import ResgistroEstudiante from './components/ResgistroEstudiante.jsx';
 import ListadoEstudiantes from './components/ListadoEstudiantes.jsx';
 import ListadoProf from './components/ListadoProf.jsx';
-import Pedidos from './components/Pedidos.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx';
 import RegisProf from './components/RegistroProf.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -34,7 +32,13 @@ function App() {
             </SortedRouteUsers>
           }/>
 
-          <Route path="/registroEstudiante" element={<ResgistroEstudiante />} />
+          <Route path="/registroEstudiante" element={
+            
+            <SortedRouteAdmin>
+            <ResgistroEstudiante />
+            </SortedRouteAdmin>
+            
+            } />
 
           <Route path="/registroAdmin" element={
             <SortedRouteAdmin>
@@ -59,8 +63,6 @@ function App() {
               <ListadoProf />
             </SortedRouteAdmin> 
           } />
-
-          <Route path="/pedidos" element={<Pedidos />} />
         </Routes>
       </Router>
     </AuthProvider>

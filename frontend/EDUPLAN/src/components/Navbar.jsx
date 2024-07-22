@@ -3,13 +3,13 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import "./styles/Navb.css";
-
+import { Navigate } from "react-router-dom";
 const LogoutButton = ({ pathname }) => {
   const { isLoggedIn, userType, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
-    window.location.reload();
+    window.location.href = "/";
   };
 
   const handleLogin = () => {
@@ -19,9 +19,7 @@ const LogoutButton = ({ pathname }) => {
   return (
     isLoggedIn ? 
     <div>
-      {userType === 'administrador' && <a href="/admin" className="nav-link">Admin Dashboard</a>}
-      {userType === 'profesor' && <a href="/profesor" className="nav-link">Profesor Dashboard</a>}
-      {userType === 'estudiante' && <a href="/estudiante" className="nav-link">Estudiante Dashboard</a>}
+
       <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
     </div> :
     <button className={`login-button boxLog ${pathname === '/login' ? 'active' : ''}`} onClick={handleLogin}>Iniciar sesión</button>
@@ -33,6 +31,41 @@ function Navb() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const {userType } = useContext(AuthContext);
+
+  const userRoutes = {
+    administrador: [
+      { path: '/registroEstudiante', label: 'Registro Estudiante' },
+      { path: '/registroProfe', label: 'Registro Profesor' },
+      { path: '/listadoEstudiantes', label: 'Listado Estudiantes' },
+      { path: '/listadoProf', label: 'Listado Profesores' },
+      // Rutas para el administrador
+    ],
+    profesor: [
+      { path: '/evaluaciones', label: 'Evaluaciones' },
+      { path: '/listadoEstudiantes', label: 'Listado Estudiantes' },
+      // Rutas para el profesor
+    ],
+    estudiante: [
+      { path: '/estudiante', label: 'Estudiante Dashboard' },
+      { path: '/evaluaciones', label: 'Evaluaciones' },
+      // Rutas para el estudiante
+    ],
+  };
+
+  const renderLinks = () => {
+    const routes = userRoutes[userType];
+    if (!routes) return null;
+
+    return routes.map((route) => (
+      <a
+        key={route.path}
+        href={route.path}
+        className={`box ${location.pathname === route.path ? 'active' : ''}`}
+      >
+        {route.label}
+      </a>
+    ));
+  };
 
   const changeBackground = () => {
     if (window.scrollY >= 800) {
@@ -51,13 +84,7 @@ return (
       <h1 className="title">EduPlan</h1>
       <nav className={isOpen ? "nav-open" : "navcito"}>
         <div className="nav-links">
-          {userType === 'administrador' && <a href="/" className={`box ${location.pathname === '/' ? 'active' : ''}`}>Inicio</a>}
-          {userType === 'administrador' && <a href="/registroEstudiante" className={`box ${location.pathname === '/registroEstudiante' ? 'active' : ''}`}>Registro Estudiante</a>}
-          {userType === 'administrador' && <a href="/registroProfe" className={`box ${location.pathname === '/registroProfe' ? 'active' : ''}`}>Registro Profesor</a>}
-          {userType === 'administrador' && <a href="/registroAdmin" className={`box ${location.pathname === '/registroAdmin' ? 'active' : ''}`}>Registro Admin</a>}
-          {userType === 'administrador' && <a href="/listadoEstudiantes" className={`box ${location.pathname === '/listadoEstudiantes' ? 'active' : ''}`}>Listados de Estudiantes</a>}
-          {userType === 'administrador' && <a href="/listadoProf" className={`box ${location.pathname === '/listadoProf' ? 'active' : ''}`}>Listados de Profesores</a>}
-        <a href="/evaluaciones" className={`box ${location.pathname === '/evaluaciones' ? 'active' : ''}`}>Evaluaciones</a>
+          {renderLinks()}
         </div>
         <div className="cajilla">
           <LogoutButton pathname={location.pathname} />
