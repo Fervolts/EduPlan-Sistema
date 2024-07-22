@@ -1,50 +1,88 @@
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import { AuthContext } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-//import { userType } from '../context/AuthContext';
-
-const token = localStorage.getItem('token');
-const tipoUsuario = localStorage.getItem('tipoUsuario');
 
 export const SortedRoute = ({ children }) => {
     const { isLoggedIn } = useContext(AuthContext);
 
-    if(isLoggedIn === true) {
+    if (isLoggedIn) {
         return <Navigate to="/" />;
     }
-    else if(isLoggedIn === false) {
-        return children
-  }};
+
+    return children;
+};
+
+SortedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
 export const SortedRouteAdmin = ({ children }) => {
-    
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
     if (tipoUsuario !== 'administrador') {
         return <Navigate to="/" />;
     }
 
-    return children
-}
+    return children;
+};
+
+SortedRouteAdmin.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 export const SortedRouteProf = ({ children }) => {
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
     if (tipoUsuario !== 'profesor') {
         return <Navigate to="/" />;
     }
 
-    return children}
+    return children;
+};
+
+SortedRouteProf.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 export const SortedRouteEst = ({ children }) => {
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
     if (tipoUsuario !== 'estudiante') {
         return <Navigate to="/" />;
     }
 
-    return children}
+    return children;
+};
 
-export const SortedRouteusers = ({ children }) => {
+SortedRouteEst.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
-    if (tipoUsuario !== 'administrador' || 'profesor' ||'estudiante') {
+export const SortedRouteUsers = ({ children }) => {
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
+    if (!['administrador', 'profesor', 'estudiante'].includes(tipoUsuario)) {
         return <Navigate to="/" />;
-    }    
-    return children}
+    }
+
+    return children;
+};
+
+SortedRouteUsers.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+export const SortedRouteAdminOrProf = ({ children }) => {
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
+
+    if (!['administrador', 'profesor'].includes(tipoUsuario)) {
+        return <Navigate to="/" />;
+    }
+
+    return children;
+};
+
+SortedRouteAdminOrProf.propTypes = {
+    children: PropTypes.node.isRequired,
+};
