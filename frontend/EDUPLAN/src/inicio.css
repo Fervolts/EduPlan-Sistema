@@ -3,7 +3,7 @@
 html body {
     background-color: rgb(185, 184, 184);
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
 }
 
 html::-webkit-scrollbar {
@@ -12,28 +12,28 @@ html::-webkit-scrollbar {
 
 
 
-.ImageFondo{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    z-index: -9999;
-    height: 100vh;
-    left: 20%;
-}
+
 
 .Caja{
-    height: 98%;
-    width: 100%;
+    
+    background-image: url('./assets/Logo.png');
+    background-repeat: no-repeat;
+    background-size: 90vh;
+    background-position: center;
+    height: 100%;
+    width: auto;
+    max-height: inherit;
+    max-width: inherit;
     display: flex;
     flex-direction: row;
     justify-content:space-around;
     align-items: center;
-    
+    border: 10px solid black;
 }
 
 
 .section2{
+    border: 10px solid red;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,13 +49,18 @@ html::-webkit-scrollbar {
   
 }
 
+.section{
+    border : 10px solid red;;
+}
+
 .fotico2{
+    border: 10px solid red;
     background-size:cover;
     background-image: url('./assets/campaña 12.png');
     background-repeat: no-repeat;
     background-position: center;
-    height: 500px;
-    width: 400px;
+    height: 450px;
+    width: 350px;
 }
 
 .titulito{

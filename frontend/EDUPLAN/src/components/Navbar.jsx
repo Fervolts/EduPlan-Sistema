@@ -51,7 +51,7 @@ function Navb() {
     ],
   };
 
-  const renderLinks = () => {
+  const renderLinks = () => { 
     const routes = userRoutes[userType];
     if (!routes) return null;
 
