@@ -12,9 +12,18 @@ const {createInscripcion, getInscripciones} = require('../controllers/inscripcio
 const {createImparte, getImparte} = require('../controllers/imparteController');
 const {createRol, getRoles} = require('../controllers/rolController');
 const {createUsuarioRol, getUsuariosRoles} = require('../controllers/usuarioRolController');
+const {createNoticia, getNoticiaById, getAllNoticias, updateNoticia, deleteNoticia} = require('../controllers/NoticiaController');
 
 // Importar middleware
 const authenticateToken = require('../middlewares/authMiddleware');
+
+
+//Rutas de noticias
+router.get('/noticias', getAllNoticias);
+router.get('/noticias/:id', getNoticiaById);
+router.post('/noticias', createNoticia);
+router.put('/noticias/:id', updateNoticia);
+router.delete('/noticias/:id', deleteNoticia);
 
 // Rutas para autenticación
 router.post('/login/estudiante', loginEstudiante);

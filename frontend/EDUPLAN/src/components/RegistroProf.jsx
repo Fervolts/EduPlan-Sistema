@@ -78,6 +78,7 @@ const RegistrarProfesor = () => {
   };
 
   return (
+    <div className='login-container'>
     <div className="card">
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
@@ -108,6 +109,7 @@ const RegistrarProfesor = () => {
         <button type="submit" className="button">Registrar</button>
       </form>
       {mensaje && <p className="success-message">{mensaje}</p>}
+    </div>
     </div>
   );
 };

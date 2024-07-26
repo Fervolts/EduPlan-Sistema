@@ -1,6 +1,13 @@
 .students {
     padding: 20px;
+    height: 100%;
+    width: auto;
+    overflow:scroll;
+    
   }
+
+div::-webkit-scrollbar{
+    width: 0;}
   
   .students-list {
     margin-top: 20px;

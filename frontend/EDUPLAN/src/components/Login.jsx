@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Modal from './Modals/Modal'; // Asegúrate de ajustar la ruta si es necesario
+import Modal from './Modals/Modal'; 
 import './styles/Login.css';
 
 const Login = () => {
