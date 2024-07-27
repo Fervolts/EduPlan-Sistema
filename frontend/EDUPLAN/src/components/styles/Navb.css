@@ -47,6 +47,7 @@
     display: flex; 
     align-items: center; 
     justify-content: center; 
+    cursor: pointer;
 }
 
 .header {
@@ -119,6 +120,12 @@
     border: var(--text-color) solid;
 }
 
+.active {
+    color: white;
+    background-color: rgba(17, 15, 15, 0.216);
+    text-shadow: black 0.4em 0.4em 0.7em;
+}
+
 header .nav-btn {
     padding: 1px;
     cursor: pointer;
@@ -171,7 +178,7 @@ header .nav-btn {
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        width: 40%;
+        width: 121px;
         gap: 1rem;
         padding-left: 0vh;
     }
@@ -210,10 +217,15 @@ header .nav-btn {
         top: 2rem;
         right: 2rem;
     }
+
+    .active{
+        display: flex;
+         background-color: rgba(17, 15, 15, 0.216);
+         text-align: center;
+         justify-content: center;
+         padding: 6px;
+       }
 }
 
-.active {
-    color: white;
-    background-color: rgba(12, 105, 58, 0.222);
-    text-shadow: black 0.4em 0.4em 0.7em;
-}
+
+

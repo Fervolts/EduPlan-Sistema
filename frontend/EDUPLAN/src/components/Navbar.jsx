@@ -3,7 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import "./styles/Navb.css";
-import { Navigate } from "react-router-dom";
+
 const LogoutButton = ({ pathname }) => {
   const { isLoggedIn, userType, logout } = useContext(AuthContext);
 
@@ -80,7 +80,7 @@ function Navb() {
 
 return (
     <header className={navbar ? "nav flex" : "header flex"}>
-      <h1 className="title">EduPlan</h1>
+      <h1 className="title" onClick={() => window.location.href = "/"}>EduPlan</h1>
       <nav className={isOpen ? "nav-open" : "navcito"}>
         <div className="nav-links">
           {renderLinks()}

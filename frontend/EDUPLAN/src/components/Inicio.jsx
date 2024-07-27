@@ -2,8 +2,9 @@ import { InstagramEmbed } from 'react-social-media-embed';
 import Logo from '../assets/Logo.svg';
 import '../inicio.css';
 import {FaYoutubeSquare, FaInstagram, FaTwitter, FaFacebook} from 'react-icons/fa';
-import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import NoticiasList from './Noticia';
+
 
 function Inicio() {
 
@@ -29,7 +30,7 @@ function Inicio() {
       </div>
 
       <div className='section'>
-        <InstagramEmbed url="https://www.instagram.com/p/C9pwEevxKo3/" width={350} height={430} />
+        <InstagramEmbed url="https://www.instagram.com/p/C9pwEevxKo3/" />
       </div> 
 
       <div className='section2'>
@@ -45,32 +46,11 @@ function Inicio() {
 
       </div>
             <div className = 'UniLogo2'>
-              
-            <Carousel
-            showArrows={true}
-            autoPlay={true}
-            showThumbs={false}
-            swipeable={true}
-            emulateTouch={true}
-            infiniteLoop={true}
-            showStatus={false}
-            showIndicators={false}
-            stopOnHover={true}
-            interval={3000}
-            transitionTime={1000}
-            >
-              <div>
-                <p>Semen gay anal marico</p>
+              <div className = 'Mapa'>
+               
               </div>
-              <div>
-                <p>Semen gay anal marico</p>
-              </div>
-              <div>
-                <p>Semen gay anal marico</p>
-              </div>
-
-
-            </Carousel>
+      
+            <NoticiasList/>
             </div>
 
       </div>
