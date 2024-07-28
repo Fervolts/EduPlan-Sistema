@@ -7,14 +7,19 @@ const {createEstudiante, getEstudiantes, deleteEstudiante} = require('../control
 const {createProfesor, getProfesores, deleteProfesor} = require('../controllers/profesorController');
 const {createMateria, getMaterias} = require('../controllers/materiaController');
 const {createAdministrador, deleteAdministrador, getAdministradores} = require('../controllers/administradorController');
-const {createEvaluacion, getEvaluaciones, deleteEvaluacion, updateEvaluacion} = require('../controllers/evaluacionController');
+const {createEvaluacion, getEvaluaciones, deleteEvaluacion, updateEvaluacion, uploadEvaluacion, exportarNotasPDF } = require('../controllers/evaluacionController');
 const {createInscripcion, getInscripciones} = require('../controllers/inscripcionController');
 const {createImparte, getImparte} = require('../controllers/imparteController');
 const {createRol, getRoles} = require('../controllers/rolController');
 const {createUsuarioRol, getUsuariosRoles} = require('../controllers/usuarioRolController');
 
 // Importar middleware
-const authenticateToken = require('../middlewares/authMiddleware');
+const {authenticateToken} = require('../middlewares/authMiddleware');
+
+
+// const { generatePDF } = require('../controllers/PDFController');
+
+
 
 // Rutas para autenticación
 router.post('/login/estudiante', loginEstudiante);
@@ -51,6 +56,8 @@ router.post('/evaluaciones/agg', authenticateToken, createEvaluacion);
 router.get('/evaluaciones', getEvaluaciones);
 router.put('/evaluaciones/:id', updateEvaluacion); 
 router.delete('/evaluaciones/:id', deleteEvaluacion); 
+router.post('/evaluaciones/:id_evaluacion/upload',  uploadEvaluacion);
+router.get('/evaluaciones/exportar-notas/:id_materia',authenticateToken, exportarNotasPDF); 
 
 // Rutas para inscripciones
 router.post('/inscripciones', authenticateToken, createInscripcion);

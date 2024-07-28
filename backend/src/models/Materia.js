@@ -5,16 +5,15 @@ const Materia = sequelize.define('Materia', {
   id_materia: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: true
   },
   nombre_materia: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
+    allowNull: false
+  }
 }, {
   tableName: 'Materias',
-  timestamps: false,
+  timestamps: false
 });
 
 module.exports = Materia;

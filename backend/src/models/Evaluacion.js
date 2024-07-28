@@ -1,37 +1,45 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Materia = require('./Materia');
 
 const Evaluacion = sequelize.define('Evaluacion', {
   id_evaluacion: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: true
   },
   id_materia: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   fecha_limite: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: false
   },
   porcentaje_calificacion: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   descripcion: {
-    type: DataTypes.TEXT,
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: false
   },
   calificacion: {
     type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.ENUM,
+    values: ['pendiente', 'completada', 'completada con retraso'],
+    defaultValue: 'pendiente',
+    allowNull: false
+  },
+  enlace: {
+    type: DataTypes.STRING,
+    allowNull: true 
   },
 }, {
-  tableName: 'Evaluaciones',
-  timestamps: false,
+  tableName: 'evaluaciones',
+  timestamps: false
 });
-
-Evaluacion.belongsTo(Materia, { foreignKey: 'id_materia' });
 
 module.exports = Evaluacion;

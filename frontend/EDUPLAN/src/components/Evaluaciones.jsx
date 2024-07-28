@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import './styles/Evaluaciones.css';
 import { AuthContext } from '../context/AuthContext';
 
@@ -9,21 +9,31 @@ const ListadoEvaluaciones = () => {
   const [materias, setMaterias] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editEval, setEditEval] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEvalId, setSelectedEvalId] = useState(null);
   const [formValues, setFormValues] = useState({
     id_materia: '',
     fecha_limite: '',
     porcentaje_calificacion: '',
     descripcion: '',
-    calificacion: ''
+    calificacion: '',
+    estado: 'pendiente',
+    enlace: ''
   });
+  const [enlace, setEnlace] = useState('');
 
-  const { userType } = useContext(AuthContext);
+  const { userType, userId } = useContext(AuthContext);
+
+  useEffect(() => {
+    fetchMaterias();
+    fetchEvaluaciones();
+  }, []);
 
   const fetchMaterias = async () => {
     try {
       const token = localStorage.getItem('token');
       let res = await fetch(`${API_URL}/materias`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('No autorizado');
       let data = await res.json();
@@ -37,32 +47,35 @@ const ListadoEvaluaciones = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token provided');
+
       let res = await fetch(`${API_URL}/evaluaciones`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('No autorizado');
+      if (!res.ok) {
+        if (res.status === 401) {
+          console.error('Token inválido o expirado');
+        }
+        throw new Error('No autorizado');
+      }
       let data = await res.json();
       setEvaluaciones(data);
     } catch (error) {
-      console.error('Error al obtener evaluaciones:', error);
+      console.error('Error al obtener evaluaciones:', error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMaterias();
-    fetchEvaluaciones();
-  }, []);
-
   const getMateriaName = (idMateria) => {
-    const materia = materias.find(m => m.id_materia === idMateria);
+    const materia = materias.find((m) => m.id_materia === idMateria);
     return materia ? materia.nombre_materia : 'Desconocido';
   };
 
   const handleEditClick = (evaluacion) => {
     setEditEval(evaluacion);
     setFormValues(evaluacion);
+    setShowModal(true);
   };
 
   const handleInputChange = (e) => {
@@ -70,36 +83,104 @@ const ListadoEvaluaciones = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleUpdateEvaluacion = async () => {
+  const handleEnlaceChange = (e) => {
+    setEnlace(e.target.value);
+  };
+
+  const handleUpdateEvaluacion = async (e) => {
+    e.preventDefault();
     try {
       const token = localStorage.getItem('token');
       let res = await fetch(`${API_URL}/evaluaciones/${editEval.id_evaluacion}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formValues)
+        body: JSON.stringify(formValues),
       });
       if (!res.ok) throw new Error('No autorizado');
-      let data = await res.json();
+      const updatedEvaluation = await res.json();
+      console.log('Evaluación actualizada:', updatedEvaluation);
       setEditEval(null);
       setFormValues({
         id_materia: '',
         fecha_limite: '',
         porcentaje_calificacion: '',
         descripcion: '',
-        calificacion: ''
+        calificacion: '',
+        estado: 'pendiente',
+        enlace: ''
       });
-      fetchEvaluaciones(); // Refresh the evaluations list
+      fetchEvaluaciones();
+      setShowModal(false);
     } catch (error) {
       console.error('Error al actualizar evaluación:', error);
     }
   };
 
+  const handleSubmitEnlace = async () => {
+    if (!enlace) {
+      console.error('No enlace provided');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/evaluaciones/${selectedEvalId}/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ enlace }), 
+      });
+      if (!res.ok) throw new Error('No autorizado');
+      fetchEvaluaciones();
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error al enviar enlace:', error);
+    }
+  };
+
+  const handleOpenModal = (evaluacionId) => {
+    setSelectedEvalId(evaluacionId);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
+    setShowModal(false);
     setEditEval(null);
   };
+
+  const handleExportNotas = async (id_materia) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/evaluaciones/exportar-notas/${id_materia}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error('Error al exportar notas');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `notas_materia_${id_materia}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al exportar notas:', error);
+    }
+  };
+
+  const groupedEvaluaciones = evaluaciones.reduce((acc, evaluacion) => {
+    const materiaName = getMateriaName(evaluacion.id_materia);
+    if (!acc[materiaName]) {
+      acc[materiaName] = [];
+    }
+    acc[materiaName].push(evaluacion);
+    return acc;
+  }, {});
 
   return (
     <div className="evaluaciones">
@@ -109,65 +190,158 @@ const ListadoEvaluaciones = () => {
           <p>Cargando...</p>
         ) : (
           <>
-            {evaluaciones.length > 0 ? (
-              <div className="column-container">
-                {evaluaciones.map(evaluacion => (
-                  <div key={evaluacion.id_evaluacion} className="evaluacion-card">
-                    <div className="card-details">
-                      <h3>{evaluacion.descripcion}</h3>
-                      <p><strong>Materia:</strong> {getMateriaName(evaluacion.id_materia)}</p>
-                      <p><strong>Fecha Límite:</strong> {evaluacion.fecha_limite}</p>
-                      <p><strong>Porcentaje Calificación:</strong> {evaluacion.porcentaje_calificacion}%</p>
-                      <p><strong>Calificación:</strong> {evaluacion.calificacion !== null ? evaluacion.calificacion : 'No asignada'}</p>
-                      {(userType === 'administrador' || userType === 'profesor') && (
-                          <div className="edit-button-container">
-                          <button onClick={() => handleEditClick(evaluacion)}>Editar</button>
-                        </div>
-                      )}
+            {Object.keys(groupedEvaluaciones).length > 0 ? (
+              Object.keys(groupedEvaluaciones).map((materiaName) => (
+                <div key={materiaName} className="materia-section">
+                  <h3>{materiaName}</h3>
+                  {(userType === 'administrador') && (
+                    <div className="export-notas">
+                      <button
+                        className="export-button"
+                        onClick={() => handleExportNotas(materias.find(m => m.nombre_materia === materiaName).id_materia)}
+                      >
+                        Exportar Notas
+                      </button>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )}
+                  {groupedEvaluaciones[materiaName].map((evaluacion) => (
+                    <div key={evaluacion.id_evaluacion} className="evaluacion-card">
+                      <div className="card-details">
+                        <h4>{evaluacion.descripcion}</h4>
+                        <p>
+                          <strong>Fecha Límite:</strong> {evaluacion.fecha_limite}
+                        </p>
+                        <p>
+                          <strong>Porcentaje Calificación:</strong>{' '}
+                          {evaluacion.porcentaje_calificacion}%
+                        </p>
+                        <p>
+                          <strong>Calificación:</strong>{' '}
+                          {evaluacion.calificacion !== null ? evaluacion.calificacion : 'No asignada'}
+                        </p>
+                        <p>
+                          <strong>Estado:</strong> {evaluacion.estado}
+                        </p>
+                        {userType === 'estudiante' && evaluacion.estado === 'pendiente' && (
+                          <div className="upload-button-container">
+                            <button className="upload-button" onClick={() => handleOpenModal(evaluacion.id_evaluacion)}>
+                              Adjuntar Enlace
+                            </button>
+                          </div>
+                        )}
+                        {(userType === 'administrador' || userType === 'profesor') && (
+                          <div className="edit-button-container">
+                            <button className="edit-button" onClick={() => handleEditClick(evaluacion)}>Editar</button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
             ) : (
-              <div className="no-students">
+              <div className="no-evaluaciones">
                 <p>No hay evaluaciones registradas.</p>
               </div>
             )}
           </>
         )}
       </div>
-      {editEval && (
+      {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close" onClick={handleCloseModal}>&times;</span>
-            <h2>Editar Evaluación</h2>
-            <form>
-              <label>
-                Materia:
-                <select name="id_materia" value={formValues.id_materia} onChange={handleInputChange}>
-                  {materias.map(materia => (
-                    <option key={materia.id_materia} value={materia.id_materia}>{materia.nombre_materia}</option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Fecha Límite:
-                <input type="date" name="fecha_limite" value={formValues.fecha_limite} onChange={handleInputChange} />
-              </label>
-              <label>
-                Porcentaje Calificación:
-                <input type="number" name="porcentaje_calificacion" value={formValues.porcentaje_calificacion} onChange={handleInputChange} />
-              </label>
-              <label>
-                Descripción:
-                <input type="text" name="descripcion" value={formValues.descripcion} onChange={handleInputChange} />
-              </label>
-              <label>
-                Calificación:
-                <input type="number" name="calificacion" value={formValues.calificacion} onChange={handleInputChange} />
-              </label>
-              <button type="button" onClick={handleUpdateEvaluacion}>Actualizar Evaluación</button>
-            </form>
+            <span className="close" onClick={handleCloseModal}>
+              &times;
+            </span>
+            {editEval ? (
+              <div className="edit-form">
+                <h2>Editar Evaluación</h2>
+                <form onSubmit={handleUpdateEvaluacion}>
+                  <label htmlFor="id_materia">Materia:</label>
+                  <select
+                    id="id_materia"
+                    name="id_materia"
+                    value={formValues.id_materia}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Selecciona una materia</option>
+                    {materias.map((materia) => (
+                      <option key={materia.id_materia} value={materia.id_materia}>
+                        {materia.nombre_materia}
+                      </option>
+                    ))}
+                  </select>
+                  <label htmlFor="fecha_limite">Fecha Límite:</label>
+                  <input
+                    type="date"
+                    id="fecha_limite"
+                    name="fecha_limite"
+                    value={formValues.fecha_limite}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <label htmlFor="porcentaje_calificacion">Porcentaje Calificación:</label>
+                  <input
+                    type="number"
+                    id="porcentaje_calificacion"
+                    name="porcentaje_calificacion"
+                    value={formValues.porcentaje_calificacion}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <label htmlFor="descripcion">Descripción:</label>
+                  <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    value={formValues.descripcion}
+                    onChange={handleInputChange}
+                    required
+                  ></textarea>
+                  <label htmlFor="calificacion">Calificación:</label>
+                  <input
+                    type="number"
+                    id="calificacion"
+                    name="calificacion"
+                    value={formValues.calificacion}
+                    onChange={handleInputChange}
+                  />
+                  <label htmlFor="estado">Estado:</label>
+                  <select
+                    id="estado"
+                    name="estado"
+                    value={formValues.estado}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completado">Completado</option>
+                  </select>
+                  <label htmlFor="enlace">Enlace:</label>
+                  <input
+                    type="text"
+                    id="enlace"
+                    name="enlace"
+                    value={formValues.enlace}
+                    onChange={handleInputChange}
+                  />
+                  <button type="submit">Guardar Cambios</button>
+                </form>
+              </div>
+            ) : (
+              <div className="upload-form">
+                <h2>Adjuntar Enlace</h2>
+                <label htmlFor="enlace">Enlace:</label>
+                <input
+                  type="text"
+                  id="enlace"
+                  name="enlace"
+                  value={enlace}
+                  onChange={handleEnlaceChange}
+                />
+                <button onClick={handleSubmitEnlace}>Subir</button>
+              </div>
+            )}
           </div>
         </div>
       )}

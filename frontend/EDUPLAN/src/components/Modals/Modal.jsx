@@ -9,7 +9,7 @@ const Modal = ({ isOpen, onClose, title, message }) => {
       <div className="modal-content">
         <div className="modal-header">
           <h2>{title}</h2>
-          <button onClick={onClose} className="close-button">&times;</button>
+          {/* <button onClick={onClose} className="close-button">&times;</button> */}
         </div>
         <div className="modal-body">
           <p>{message}</p>
