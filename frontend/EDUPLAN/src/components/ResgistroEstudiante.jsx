@@ -64,11 +64,13 @@ const RegistroEstudiante = () => {
   };
 
   return (
+    <div className='login-container'>
     <div className="card">
+      
+      <form className="form formEst" onSubmit={handleSubmit}>
       <video autoPlay loop muted className="video">
         {<source src={Video1} type="video/mp4" />}
       </video>
-      <form className="form" onSubmit={handleSubmit}>
         <label className="label">
           Nombres:
           <input type="text" name="nombres" value={formulario.nombres} onChange={handleChange} className="input" />
@@ -107,6 +109,7 @@ const RegistroEstudiante = () => {
         <button type="submit" className="button">Registrar</button>
       </form>
       {formulario.enviado && <p className="success-message">Formulario enviado correctamente!</p>}
+    </div>
     </div>
   );
 };

@@ -11,6 +11,7 @@ import RegisAdmin from './components/RegistroAdmin.jsx';
 import RegisProf from './components/RegistroProf.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { SortedRoute, SortedRouteAdmin, SortedRouteProf, SortedRouteUsers, SortedRouteAdminOrProf } from './context/SortedRoute.jsx';
+import Footer from './components/Footer.jsx';
 
 function App() {
   return (
@@ -64,6 +65,8 @@ function App() {
             </SortedRouteAdmin> 
           } />
         </Routes>
+
+        <Footer />
       </Router>
     </AuthProvider>
   );

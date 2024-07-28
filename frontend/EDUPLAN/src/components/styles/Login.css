@@ -12,8 +12,8 @@
     border-radius: 15px; /* Bordes más redondeados */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
     width: 300px;
-    max-width: 100%;
     text-align: center;
+    margin: 18px;
 }
 
 .titleLogin {
@@ -35,13 +35,7 @@
     text-align: left;
 }
 
-.input {
-    padding: 12px;
-    margin-top: 5px;
-    border: 1px solid #ccc; /* Color de borde más suave */
-    border-radius: 5px;
-    font-size: 1rem; /* Tamaño de fuente en el input */
-}
+
 
 .button {
     background-color: #007bff; /* Color de botón más moderno */
@@ -64,9 +58,4 @@
     margin-top: 5px;
 }
 
-.success-message {
-    color: #28a745;
-    font-size: 1rem;
-    text-align: center;
-    margin-top: 10px;
-}
+

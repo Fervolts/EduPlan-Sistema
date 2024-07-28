@@ -1,73 +1,279 @@
 @import url('https://fonts.googleapis.com/css2?family=Arvo:wght@700&display=swap')
 ;
 html body {
-    background-color: rgb(185, 184, 184);
+    background-color: white;
     height: 100vh;
-    overflow: auto;
 }
 
 html::-webkit-scrollbar {
     width: 0;
 }
 
-
+footer{
+    background-color: #2C3E50;
+    height: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font: 'Roboto', sans-serif;
+    font-weight: bold ;
+    min-height: 19px;
+}
 
 
 
 .Caja{
-    
     background-image: url('./assets/Logo.png');
-    background-repeat: no-repeat;
-    background-size: 90vh;
+    background-repeat:no-repeat;
     background-position: center;
     height: 100%;
     width: auto;
-    max-height: inherit;
-    max-width: inherit;
     display: flex;
     flex-direction: row;
-    justify-content:space-around;
+    flex-wrap: wrap;
+    overflow-y: hidden;
+  
+}
+
+.redes{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
-    border: 10px solid black;
+    height: auto;
+    width: 25%;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 
-.section2{
-    border: 10px solid red;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+
+.redesT{
+    color: white;
+    flex-basis: 100%;
     text-align: center;
+    font-family: Roboto;
+    font-size: 1.5rem;
+    margin-top: 0.6rem;
+}
+
+.icon{
+    align-self: flex-end;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.youtube{
+    color: red;
+}
+
+.insta{
+    color: rgb(255, 255, 255);
+    background: linear-gradient(to right, red,orange,rgb(229, 229, 124),green,blue,indigo,violet);
+    border-radius: 10px;
+}
+
+.twitter{
+    color: rgb(0, 179, 255)
+}
+
+.facebook{
+    color: rgb(0, 149, 255)
+}
+
+.logo{
+    height: 10rem;
+    
+}
+
+
+.UniLogo{
+    flex-wrap: wrap;
+    display: flex;
+    height: 25%;
+    background: linear-gradient(to right, #f9f9f9 0%, white 35%, #ffffff 35%, #2C3E50 100%);
+    flex-basis: 100%;
+    gap: 0rem;
+}
+
+.upper{
+    width: 100%;
+    display: flex;
+    height: 80%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+
+.downer{
+    background-color: #2C3E50;
+    height: 20%;
+    width: 100%;
+    align-self: flex-end;
+}
+
+.UniLogo2{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    max-height: 100%;
+    width: 50%;
+    background-color: white;
+    height: 25%;
+    flex-basis: 100%;
+    align-self: flex-end;
+}
+
+.section2{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: rgba(41, 38, 38, 0.671);   
+    border-radius: 10px;
+    height: 430px;
+    width: auto;
+    align-self: center;
+    
+}
+
+.DivNoticia{
+    height: 10rem;
+    width: 30rem;
+    border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 20px;
-    padding: 4rem;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.noticia-card {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+
+  }
+
+  .noticia-card h3{
+    font-size: 1.3rem;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.noticia-card p{
+    max-width: -webkit-fill-available;
+    word-wrap: break-word;
+    font-size: 1rem;
+    height: auto;
+}
+
+
+
+
+
+.Divcar{
+    width: 81.5%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #d7d7d8;
+    border-radius: 20px;
+}
+
+
+.Mapa{
+    background:url(assets/Ubicacion.png);
+    background-repeat:no-repeat;
+    background-position: center;
+    background-size: cover;
+    width: 18.5%;
+    height: 100%;
+
+}
+
+
+.carousel .slide{
+    height: 100%;
+    display: flex;
+
+}
+
+.slider.animated{
+    display: flex;
+}
+
+.slide.selected{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.carousel-slider{
+    height: 100%;
+    display: flex;
+}
+.carousel-root{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.axis-horizontal{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .inside{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
     max-width: 70vh;
   
 }
 
 .section{
-    border : 10px solid red;;
+    height: 430px;
+    width: 18.5%;
+    border-radius: 10px;
+    align-self: center;
 }
 
-.fotico2{
-    border: 10px solid red;
+.section3{
     background-size:cover;
     background-image: url('./assets/campaña 12.png');
     background-repeat: no-repeat;
     background-position: center;
-    height: 450px;
-    width: 350px;
+    height: 430px;
+    width: 18.5%;
+    border-radius: 10px;
+    align-self: center;
 }
 
 .titulito{
     color: white;
     font-size: 4rem;
-    font-family: 'Arvo', serif;
-    margin-top: 1rem;}
+    font-family: 'Arvo', serif;}
 
 .parrafo{
     color: white;
@@ -95,6 +301,20 @@ html::-webkit-scrollbar {
 
 @media screen and (max-width: 1300px){
 
+    .login-container{
+        height: 100%;
+        overflow: scroll;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .formEst{
+        align-self: center;
+    }
+
+
     .section{
         padding: 0 50px;
     }
@@ -110,6 +330,7 @@ html::-webkit-scrollbar {
 }
 
 @media screen and (max-width: 545px){
+    
 
     .section{
         padding: 1px;
@@ -122,11 +343,17 @@ html::-webkit-scrollbar {
     .parrafo{
         font-size: 0.8rem;
     }
+
+    footer{
+        font-size: .8rem;
+    }
 }
 
 @media screen and (max-width: 380px){
-    html{
-        overflow: hidden;}
+    #root{
+        height: 100%;
+    }
+    html{height: 100vh;}
 
     .section{
         padding: 1px;
