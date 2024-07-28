@@ -10,8 +10,10 @@ import ListadoProf from './components/ListadoProf.jsx';
 import RegisAdmin from './components/RegistroAdmin.jsx';
 import RegisProf from './components/RegistroProf.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
-import { SortedRoute, SortedRouteAdmin, SortedRouteProf, SortedRouteUsers, SortedRouteAdminOrProf } from './context/SortedRoute.jsx';
+import { SortedRoute, SortedRouteAdmin, SortedRouteUsers, SortedRouteAdminOrProf } from './context/SortedRoute.jsx';
 import Footer from './components/Footer.jsx';
+import Dashboard from './components/Dashboard.jsx';
+import { RutaDashboard, RequireAuth } from './context/Dash.jsx';
 
 function App() {
   return (
@@ -19,7 +21,14 @@ function App() {
       <Router>
         <Navb />
         <Routes>
-          <Route path="/" element={<Inicio />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/" element={
+            <RutaDashboard>
+            <Inicio />
+            </RutaDashboard>
+          } />
 
           <Route path="/login" element={
             <SortedRoute>

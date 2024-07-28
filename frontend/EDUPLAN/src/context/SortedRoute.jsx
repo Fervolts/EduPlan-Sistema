@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { AuthContext } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
+
+
 export const SortedRoute = ({ children }) => {
     const { isLoggedIn } = useContext(AuthContext);
 
