@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './styles/Registros.css';
 const RegistrarAdmin = () => {
   const [formulario, setFormulario] = useState({
     nombre: '',
@@ -65,6 +65,7 @@ const RegistrarAdmin = () => {
   };
 
   return (
+    <div className='login-container'>
     <div className="card">
       <form className="form" onSubmit={handleSubmit}>
         <label className="label">
@@ -85,6 +86,7 @@ const RegistrarAdmin = () => {
         <button type="submit" className="button">Registrar</button>
       </form>
       {mensaje && <p className="success-message">{mensaje}</p>}
+    </div>
     </div>
   );
 };

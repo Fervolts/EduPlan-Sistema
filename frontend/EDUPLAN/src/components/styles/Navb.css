@@ -121,9 +121,8 @@
 }
 
 .active {
-    color: white;
-    background-color: rgba(17, 15, 15, 0.216);
-    text-shadow: black 0.4em 0.4em 0.7em;
+    display: none;
+    visibility: hidden;
 }
 
 header .nav-btn {
@@ -133,6 +132,7 @@ header .nav-btn {
     border: none;
     outline: none;
     color: var(--text-color);
+    display: none;
     visibility: hidden;
     opacity: 0;
     font-size: 1.8rem;
@@ -152,6 +152,7 @@ header .nav-btn {
     }
 
     header .nav-btn {
+        display: initial;
         visibility: visible;
         opacity: 1;
         overflow: hidden;
@@ -219,11 +220,8 @@ header .nav-btn {
     }
 
     .active{
-        display: flex;
-         background-color: rgba(17, 15, 15, 0.216);
-         text-align: center;
-         justify-content: center;
-         padding: 6px;
+        display: none;
+        visibility: hidden;
        }
 }
 

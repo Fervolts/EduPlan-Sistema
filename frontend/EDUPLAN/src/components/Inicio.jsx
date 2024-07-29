@@ -1,7 +1,9 @@
 import { InstagramEmbed } from 'react-social-media-embed';
 import Logo from '../assets/Logo.svg';
 import '../inicio.css';
-import {FaYoutubeSquare, FaInstagram, FaTwitter, FaFacebook} from 'react-icons/fa';
+import {FaYoutubeSquare, FaInstagram, FaFacebook} from 'react-icons/fa';
+import { FaSquareXTwitter } from "react-icons/fa6";
+
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import NoticiasList from './Noticia';
 
@@ -18,10 +20,10 @@ function Inicio() {
         <img src={Logo} alt="Logo" className="logo" />
         <div className = 'redes'>
           <h3 className = 'redesT'>¡Siguenos en nuestras redes!</h3>
-          <FaYoutubeSquare className = 'icon youtube'/>
-          <FaInstagram className = 'icon insta'/>
-          <FaTwitter className = 'icon twitter'/>
-          <FaFacebook className = 'icon facebook'/>
+          <FaYoutubeSquare className = 'icon youtube' onClick={() => window.location.href = "https://www.youtube.com/@univalledelmomboy"}/>
+          <FaInstagram className = 'icon insta' onClick={() => window.location.href = "https://instagram.com/univalledelmomboy"}/>
+          <FaSquareXTwitter className = 'icon twitter' onClick={() => window.location.href = "https://twitter.com/Univallemomboy"}/>
+          <FaFacebook className = 'icon facebook' onClick={() => window.location.href = "https://facebook.com/univalledelmomboy/?locale=es_LA"}/>
         </div>
         </div> 
         <div className= 'downer'>

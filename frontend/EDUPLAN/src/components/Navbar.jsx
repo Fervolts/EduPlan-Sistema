@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { useLocation } from 'react-router-dom';
+import { useLocation , useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import "./styles/Navb.css";
 
@@ -30,14 +30,18 @@ function Navb() {
   const [navbar, setNav] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const {userType } = useContext(AuthContext);
 
   const userRoutes = {
     administrador: [
       { path: '/registroEstudiante', label: 'Registro Estudiante' },
       { path: '/registroProfe', label: 'Registro Profesor' },
+      { path: '/registroAdmin', label: 'Registro Admin' },
       { path: '/listadoEstudiantes', label: 'Listado Estudiantes' },
       { path: '/listadoProf', label: 'Listado Profesores' },
+      { path: '/noticias', label: 'Noticias' },
+      { path: '/evaluaciones', label: 'Evaluaciones' },
       // Rutas para el administrador
     ],
     profesor: [
@@ -55,7 +59,8 @@ function Navb() {
     const routes = userRoutes[userType];
     if (!routes) return null;
 
-    return routes.map((route) => (
+    const filteredRoutes = location.pathname === '/dashboard' ? [] : routes;
+    return filteredRoutes.map((route) => (
       <a
         key={route.path}
         href={route.path}
