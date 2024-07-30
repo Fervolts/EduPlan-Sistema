@@ -40,7 +40,7 @@ function Navb() {
       { path: '/registroAdmin', label: 'Registro Admin' },
       { path: '/listadoEstudiantes', label: 'Listado Estudiantes' },
       { path: '/listadoProf', label: 'Listado Profesores' },
-      { path: '/noticias', label: 'Noticias' },
+      // { path: '/noticias', label: 'Noticias' },
       { path: '/evaluaciones', label: 'Evaluaciones' },
       // Rutas para el administrador
     ],

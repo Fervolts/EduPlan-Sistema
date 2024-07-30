@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import './styles/Evaluaciones.css';
 import { AuthContext } from '../context/AuthContext';
+import CreateEvaluacion from './CreateEvaluacion';
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -11,6 +12,7 @@ const ListadoEvaluaciones = () => {
   const [editEval, setEditEval] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvalId, setSelectedEvalId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     id_materia: '',
     fecha_limite: '',
@@ -57,6 +59,15 @@ const ListadoEvaluaciones = () => {
       setLoading(false);
     }
   };
+
+  const handleCreateClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloserModal = () => {
+    setIsModalOpen(false);
+  };
+
 
   const getMateriaName = (idMateria) => {
     const materia = materias.find((m) => m.id_materia === idMateria);
@@ -173,6 +184,21 @@ const ListadoEvaluaciones = () => {
 
   return (
     <div className="evaluaciones">
+      <button onClick={handleCreateClick}>Crear Evaluacion</button>
+
+{isModalOpen && (
+  <div className="modal">
+    <div className="modal-content">
+      <span className="close" onClick={handleCloserModal}>&times;</span>   
+
+      <CreateEvaluacion
+        materias={materias}
+        token={token}
+        onClose={handleCloserModal} // Função para fechar o modal
+      />
+    </div>
+  </div>
+)}
       <div className="evaluaciones-list">
         <h2 className="titulo-evaluaciones">Lista de Evaluaciones</h2>
         {loading ? (

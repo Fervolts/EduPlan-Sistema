@@ -293,10 +293,39 @@ footer{
     margin: auto
 }
 
+@media screen and (max-width: 1100px) {
+    
+    .Mapa{
+        display: none;
+    }
+    .Divcar{
+        width: 100%;
+    }
+
+    .section3{
+        display: none;
+    }
+
+    .section{
+        display: none;
+    }
+
+    .redes{
+        display: none;
+    }
+
+    .upper img{
+        height: 100px;
+    }
+
+    
+}
 
 @media screen and (max-width: 900px) {
-    .section{
+    .section2{
         padding: 0 50px;
+        height: 100%;
+        width: 100%;
     }
 
 
@@ -326,8 +355,9 @@ footer{
     }
 
 
-    .section{
-        padding: 0 50px;
+    .section2{
+        height: 100%;
+        width: 100%;
     }
 
     .titulito{
@@ -366,8 +396,9 @@ footer{
     }
     html{height: 100vh;}
 
-    .section{
-        padding: 1px;
+    .section2{
+        height: 100%;
+        width: 100%;
     }
 
     .titulito{
