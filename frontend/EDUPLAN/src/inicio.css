@@ -160,10 +160,10 @@ footer{
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     text-align: center;
-
+    gap: 2rem;
   }
 
   .noticia-card h3{
@@ -181,7 +181,14 @@ footer{
     height: auto;
 }
 
-
+.noticia-date{
+    position: fixed;
+    align-self:flex-end;
+    top: 0.5rem;
+    margin-right: 0.8rem;
+    font: bold 1rem 'Roboto', sans-serif;
+    color: gray;
+}
 
 
 

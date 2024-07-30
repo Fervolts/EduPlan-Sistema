@@ -21,6 +21,9 @@ function ProfesorDashboard() {
       <div className="dashboard-box" onClick={() => window.location.href = "/notas"}>
         <PiStudentFill size={120} color="#2c3e50" style={{marginLeft: '10px'}} /> <p>Notas Estudiantes</p>
       </div>
+      <div className='dashboard-box' onClick={() => window.location.href = "/inscripcionprofesor"} >
+        <FaUser size={100} color="#2c3e50" style={{marginLeft: '10px'}} /> <p> Ingresa Materias </p>
+      </div>
       
         </div>
     </div>
