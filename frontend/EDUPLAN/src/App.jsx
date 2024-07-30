@@ -13,7 +13,9 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { SortedRoute, SortedRouteAdmin, SortedRouteUsers, SortedRouteAdminOrProf } from './context/SortedRoute.jsx';
 import Footer from './components/Footer.jsx';
 import Dashboard from './components/Dashboard.jsx';
-import { RutaDashboard, RequireAuth } from './context/Dash.jsx';
+import { RutaDashboard } from './context/Dash.jsx';
+import AsignarMaterias from './components/AsignarMateEstu.jsx'
+import AsignarMateriasProfesor from './components/AsignarMateProf.jsx';
 
 function App() {
   return (
@@ -73,7 +75,17 @@ function App() {
               <ListadoProf />
             </SortedRouteAdmin> 
           } />
+
+          <Route path ="/inscripcionestudiante" element={
+            <AsignarMaterias/>
+          }/>
+
+          <Route path ="/inscripcionprofesor" element={
+            <AsignarMateriasProfesor/>
+          }/>
+          
         </Routes>
+        
 
         <Footer />
       </Router>

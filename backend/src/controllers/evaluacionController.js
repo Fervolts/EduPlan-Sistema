@@ -4,6 +4,7 @@ const Estudiante = require('../models/Estudiante')
 const PDFDocument = require('pdfkit');
 const EvaluacionEstudiante = require('../models/EvaluacionEstudiante')
 
+
 // Función para crear una evaluación
 exports.createEvaluacion = async (req, res) => {
   try {
@@ -100,17 +101,12 @@ exports.deleteEvaluacion = async (req, res) => {
 exports.uploadEvaluacion = async (req, res) => {
   const { enlace } = req.body;
   const { id_evaluacion } = req.params;
-  const { id_estudiante } = req.user || {};
-  if (!id_estudiante) {
-    return res.status(401).json({ error: 'No se pudo obtener el ID del estudiante' });
-  }
 
   if (!enlace) {
     return res.status(400).json({ error: 'Enlace es obligatorio' });
   }
 
   try {
-    // Buscar la evaluación
     const evaluacion = await Evaluacion.findByPk(id_evaluacion);
     if (!evaluacion) {
       return res.status(404).json({ error: 'Evaluación no encontrada' });
@@ -127,13 +123,6 @@ exports.uploadEvaluacion = async (req, res) => {
     evaluacion.estado = estadoEvaluacion;
     await evaluacion.save();
 
-    // Crear o actualizar la relación en la tabla EvaluacionesEstudiantes
-    await EvaluacionEstudiante.upsert({
-      id_estudiante,
-      id_evaluacion,
-      calificacion: null // Puedes asignar una calificación inicial si es necesario
-    });
-
     res.json(evaluacion);
   } catch (error) {
     console.error('Error al subir evaluación:', error);
@@ -141,12 +130,10 @@ exports.uploadEvaluacion = async (req, res) => {
   }
 };
 
-
 // Función para exportar notas por materia en un PDF
 exports.exportarNotasPDF = async (req, res) => {
   try {
     const { id_materia } = req.params;
-    const {id_estudiante} = req.user;
 
     if (!id_materia) {
       return res.status(400).json({ message: 'id_materia es requerido' });

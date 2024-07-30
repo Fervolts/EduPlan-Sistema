@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Importar los controladores
 const {loginEstudiante, loginProfesor, loginAdministrador} = require('../controllers/AuthController');
-const {createEstudiante, getEstudiantes, deleteEstudiante} = require('../controllers/estudianteController');
+const {createEstudiante, getEstudiantes, deleteEstudiante, asignarMateriasEstu, obtenerMateriasEstu} = require('../controllers/estudianteController');
 const {createProfesor, getProfesores, deleteProfesor} = require('../controllers/profesorController');
 const {createMateria, getMaterias} = require('../controllers/materiaController');
 const {createAdministrador, deleteAdministrador, getAdministradores} = require('../controllers/administradorController');
@@ -65,7 +65,7 @@ router.post('/evaluaciones/agg', authenticateToken, createEvaluacion);
 router.get('/evaluaciones', getEvaluaciones);
 router.put('/evaluaciones/:id', updateEvaluacion); 
 router.delete('/evaluaciones/:id', deleteEvaluacion); 
-router.post('/evaluaciones/:id_evaluacion/upload',  uploadEvaluacion);
+router.post('/evaluaciones/:id_evaluacion',uploadEvaluacion);
 router.get('/evaluaciones/exportar-notas/:id_materia',authenticateToken, exportarNotasPDF); 
 
 // Rutas para inscripciones
@@ -76,12 +76,24 @@ router.get('/inscripciones', authenticateToken, getInscripciones);
 router.post('/imparte', authenticateToken, createImparte);
 router.get('/imparte', authenticateToken, getImparte);
 
-// Rutas para roles
+// Rutas para roles 
 router.post('/roles', authenticateToken, createRol);
 router.get('/roles', authenticateToken, getRoles);
 
 // Rutas para usuarios_roles
 router.post('/usuarios_roles', authenticateToken, createUsuarioRol);
 router.get('/usuarios_roles', authenticateToken, getUsuariosRoles);
+
+//Agregando nuevos controladores a la ruta general
+
+const {asignarMaterias, obtenerMaterias} = require('../controllers/ProfesorMateriaController');
+
+router.post('/profesor/:id/materias', asignarMaterias);
+router.get('/profesor/:id/materias', obtenerMaterias);
+
+//
+
+router.post('/estudiante/:id/materias', asignarMateriasEstu);
+router.get('/estudiante/:id/materias', obtenerMateriasEstu);
 
 module.exports = router;

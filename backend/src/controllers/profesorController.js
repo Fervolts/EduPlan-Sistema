@@ -1,13 +1,18 @@
 const Profesor = require('../models/Profesor');
 const bcrypt = require('bcryptjs');
+const ProfesorMateria = require('../models/ProfesorMateria');
 
 exports.createProfesor = async (req, res) => {
   try {
-    const { nombres, apellidos, correo_electronico, usuario, contrasena } = req.body;
+    const { nombres, apellidos, correo_electronico, usuario, contrasena, materias } = req.body;
 
     // Validaciones adicionales
     if (!nombres || !apellidos || !correo_electronico || !usuario || !contrasena) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    if (materias.length > 5) {
+      return res.status(400).json({ error: 'No puedes seleccionar más de 5 materias.' });
     }
 
     // Validar que el correo electrónico y el usuario sean únicos
@@ -33,13 +38,18 @@ exports.createProfesor = async (req, res) => {
       contrasena: hashedPassword
     });
 
+    // Asignar materias al nuevo profesor
+    const entries = materias.map(materiaId => ({ id_profesor: nuevoProfesor.id, id_materia: materiaId }));
+    await ProfesorMateria.bulkCreate(entries);
+
     res.status(201).json({ mensaje: 'Profesor registrado exitosamente', profesor: nuevoProfesor });
   } catch (error) {
     console.error('Error al registrar profesor:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: 'Error al registrar profesor', detalles: error });
   }
 };
-  exports.getProfesores = async (req, res) => {
+
+exports.getProfesores = async (req, res) => {
     try {
       const profesores = await Profesor.findAll();
       res.status(200).json(profesores);

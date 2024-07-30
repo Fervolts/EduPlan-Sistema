@@ -29,30 +29,31 @@ const Login = () => {
     event.preventDefault();
     setErrores({});
     setMensaje('');
-
+  
     let errores = {};
-
+  
     if (!formulario.usuario.trim()) {
       errores.usuario = 'El campo usuario es obligatorio';
     }
     if (!formulario.contrasena.trim()) {
       errores.contrasena = 'El campo contraseña es obligatorio';
     }
-
+  
     setErrores(errores);
-
+  
     if (Object.keys(errores).length === 0) {
       const rutas = [
         { tipo: 'estudiante', url: `http://localhost:3000/api/login/estudiante` },
         { tipo: 'profesor', url: `http://localhost:3000/api/login/profesor` },
         { tipo: 'administrador', url: `http://localhost:3000/api/login/administrador` },
       ];
-
+  
       try {
         let data;
         let token;
         let tipoUsuario;
-
+        let userId; // Variable para almacenar el userId
+  
         for (let ruta of rutas) {
           const response = await fetch(ruta.url, {
             method: 'POST',
@@ -64,31 +65,32 @@ const Login = () => {
               contrasena: formulario.contrasena,
             }),
           });
-
+  
           if (response.ok) {
             data = await response.json();
             token = data.token;
-            tipoUsuario = ruta.tipo; // Asignar tipoUsuario basado en la ruta exitosa
-            break; // Salir del bucle si una respuesta es exitosa
+            userId = data.userId; // Extraer el userId de la respuesta
+            tipoUsuario = ruta.tipo;
+            break;
           }
         }
-
+  
         if (!token) {
           throw new Error('Las credenciales no son válidas para ningún tipo de usuario.');
         }
-
-        login(token, tipoUsuario); // Llamar a la función de login del contexto
-
+  
+        login(token, tipoUsuario, userId); // Pasar userId a la función de login
+  
         setModalContent({
           title: 'Inicio de sesión exitoso',
           message: '¡Has iniciado sesión exitosamente!',
         });
         setModalOpen(true);
-
+  
         setTimeout(() => {
           navigate('/');
         }, 2000); // Redirigir después de 2 segundos
-
+  
         setMensaje('Login exitoso');
         setFormulario({ usuario: '', contrasena: '' });
       } catch (error) {

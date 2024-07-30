@@ -22,7 +22,7 @@ const ListadoEvaluaciones = () => {
   });
   const [enlace, setEnlace] = useState('');
 
-  const { userType, userId } = useContext(AuthContext);
+  const { userType, userId, token } = useContext(AuthContext); // Asegúrate de obtener el token desde AuthContext
 
   useEffect(() => {
     fetchMaterias();
@@ -31,12 +31,11 @@ const ListadoEvaluaciones = () => {
 
   const fetchMaterias = async () => {
     try {
-      const token = localStorage.getItem('token');
-      let res = await fetch(`${API_URL}/materias`, {
+      const res = await fetch(`${API_URL}/materias`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('No autorizado');
-      let data = await res.json();
+      const data = await res.json();
       setMaterias(data);
     } catch (error) {
       console.error('Error al obtener materias:', error);
@@ -46,19 +45,11 @@ const ListadoEvaluaciones = () => {
   const fetchEvaluaciones = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token provided');
-
-      let res = await fetch(`${API_URL}/evaluaciones`, {
+      const res = await fetch(`${API_URL}/evaluaciones`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) {
-        if (res.status === 401) {
-          console.error('Token inválido o expirado');
-        }
-        throw new Error('No autorizado');
-      }
-      let data = await res.json();
+      if (!res.ok) throw new Error('No autorizado');
+      const data = await res.json();
       setEvaluaciones(data);
     } catch (error) {
       console.error('Error al obtener evaluaciones:', error.message);
@@ -90,8 +81,7 @@ const ListadoEvaluaciones = () => {
   const handleUpdateEvaluacion = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      let res = await fetch(`${API_URL}/evaluaciones/${editEval.id_evaluacion}`, {
+      const res = await fetch(`${API_URL}/evaluaciones/${editEval.id_evaluacion}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -121,18 +111,18 @@ const ListadoEvaluaciones = () => {
 
   const handleSubmitEnlace = async () => {
     if (!enlace) {
-      console.error('No enlace provided');
+      console.error('No enlace proporcionado');
       return;
     }
+
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/evaluaciones/${selectedEvalId}/upload`, {
+      const res = await fetch(`${API_URL}/evaluaciones/${selectedEvalId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ enlace }), 
+        body: JSON.stringify({ enlace, id_estudiante: userId }),
       });
       if (!res.ok) throw new Error('No autorizado');
       fetchEvaluaciones();
@@ -150,11 +140,10 @@ const ListadoEvaluaciones = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditEval(null);
-  };
+  };  
 
   const handleExportNotas = async (id_materia) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await fetch(`${API_URL}/evaluaciones/exportar-notas/${id_materia}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -297,7 +286,7 @@ const ListadoEvaluaciones = () => {
                     value={formValues.descripcion}
                     onChange={handleInputChange}
                     required
-                  ></textarea>
+                  />
                   <label htmlFor="calificacion">Calificación:</label>
                   <input
                     type="number"
@@ -305,6 +294,7 @@ const ListadoEvaluaciones = () => {
                     name="calificacion"
                     value={formValues.calificacion}
                     onChange={handleInputChange}
+                    required
                   />
                   <label htmlFor="estado">Estado:</label>
                   <select
@@ -317,29 +307,19 @@ const ListadoEvaluaciones = () => {
                     <option value="pendiente">Pendiente</option>
                     <option value="completado">Completado</option>
                   </select>
-                  <label htmlFor="enlace">Enlace:</label>
-                  <input
-                    type="text"
-                    id="enlace"
-                    name="enlace"
-                    value={formValues.enlace}
-                    onChange={handleInputChange}
-                  />
-                  <button type="submit">Guardar Cambios</button>
+                  <button type="submit">Actualizar</button>
                 </form>
               </div>
             ) : (
               <div className="upload-form">
-                <h2>Adjuntar Enlace</h2>
-                <label htmlFor="enlace">Enlace:</label>
+                <h2>Adjuntar Enlace de Evaluación</h2>
                 <input
                   type="text"
-                  id="enlace"
-                  name="enlace"
                   value={enlace}
                   onChange={handleEnlaceChange}
+                  placeholder="Ingrese el enlace de la evaluación"
                 />
-                <button onClick={handleSubmitEnlace}>Subir</button>
+                <button onClick={handleSubmitEnlace}>Enviar</button>
               </div>
             )}
           </div>
