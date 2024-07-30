@@ -1,17 +1,13 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import './styles/Registros.css';
 
-const AsignarMateriasProfesor = () => {
+const AsignarMaterias = () => {
   const [materias, setMaterias] = useState([]);
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]);
   const [mensaje, setMensaje] = useState('');
-  const [profesorId, setProfesorId] = useState('');
 
-  // Obtener el ID del profesor del localStorage
-  useEffect(() => {
-    const id = localStorage.getItem('profesorId');
-    setProfesorId(id);
-  }, []);
+  // Obtener el ID del estudiante del localStorage
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const fetchMaterias = async () => {
@@ -21,7 +17,7 @@ const AsignarMateriasProfesor = () => {
           throw new Error('Error al obtener las materias');
         }
         const data = await response.json();
-        console.log('Datos de materias recibidos:', data); // Verifica los datos recibidos
+        console.log('Datos de materias:', data); // Verifica la estructura de los datos
         setMaterias(data);
       } catch (error) {
         console.error('Error al obtener las materias:', error);
@@ -51,7 +47,7 @@ const AsignarMateriasProfesor = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/api/profesor/${profesorId}/materias`, {
+      const response = await fetch(`http://localhost:3000/api/estudiante/${userId}/materias`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,28 +67,28 @@ const AsignarMateriasProfesor = () => {
   return (
     <div className="Base">
     <div className="asignar-materias-container">
-      <h2 className="asignar-materias-title">Inscribete en las siguientes materias!</h2>
-      <form onSubmit={handleSubmit} className="asignar-materias-form">
+      <h2 className="asignar-materias-title">Asignar Materias Estudiante</h2>
+      <form onSubmit={handleSubmit}  className="asignar-materias-form">
         <div className="materias-list">
           {materias.length === 0 ? (
             <p>Cargando materias...</p>
           ) : (
             materias.map(materia => (
-              <div key={materia.id} className="materia-item">
+              <div key={materia.id_materia} className="materia-item">
                 <input
                   type="checkbox"
-                  id={`materia-${materia.id}`}
-                  value={materia.id}
+                  id={`materia-${materia.id_materia}`} //---
+                  value={materia.id_materia}
                   onChange={handleChange}
                   className="input-checkbox"
-                  disabled={materiasSeleccionadas.length >= 5 && !materiasSeleccionadas.includes(materia.id)}
+                  disabled={materiasSeleccionadas.length >= 5 && !materiasSeleccionadas.includes(materia.id_materia)}
                 />
-                <label htmlFor={`materia-${materia.id_materias}`} className="materia-label">{materia.nombre_materia}</label>
+                <label htmlFor={`materia-${materia.id_materia}`}  className="materia-label">{materia.nombre_materia}</label>
               </div>
             ))
           )}
         </div>
-        <button type="submit" className="submit-button">Asignar Materias</button>
+        <button type="submit"  className="submit-button">Asignar Materias</button>
       </form>
       {mensaje && <p className="message">{mensaje}</p>}
     </div>
@@ -100,4 +96,4 @@ const AsignarMateriasProfesor = () => {
   );
 };
 
-export default AsignarMateriasProfesor;
+export default AsignarMaterias;

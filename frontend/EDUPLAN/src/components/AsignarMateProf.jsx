@@ -9,7 +9,7 @@ const AsignarMateriasProfesor = () => {
 
   // Obtener el ID del profesor del localStorage
   useEffect(() => {
-    const id = localStorage.getItem('profesorId');
+    const id = localStorage.getItem('userId');
     setProfesorId(id);
   }, []);
 
@@ -78,16 +78,16 @@ const AsignarMateriasProfesor = () => {
             <p>Cargando materias...</p>
           ) : (
             materias.map(materia => (
-              <div key={materia.id} className="materia-item">
+              <div key={materia.id_materia} className="materia-item">
                 <input
                   type="checkbox"
-                  id={`materia-${materia.id}`}
-                  value={materia.id}
+                  id={`materia-${materia.id_materia}`} //Error estaba acá
+                  value={materia.id_materia} 
                   onChange={handleChange}
                   className="input-checkbox"
                   disabled={materiasSeleccionadas.length >= 5 && !materiasSeleccionadas.includes(materia.id)}
                 />
-                <label htmlFor={`materia-${materia.id}`} className="materia-label">{materia.nombre_materia}</label>
+                <label htmlFor={`materia-${materia.id_materia}`} className="materia-label">{materia.nombre_materia}</label>
               </div>
             ))
           )}
