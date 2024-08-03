@@ -3,17 +3,61 @@ const Materia = require('../models/Materia');
 const bcrypt = require('bcryptjs');
 const EstudianteMateria = require('../models/EstudianteMateria');
 
+// exports.createEstudiante = async (req, res) => {
+//   try {
+//     const { nombres, apellidos, documento_identidad, correo_electronico, numero_telefono, usuario, contrasena, materias } = req.body;
+
+//     // Validaciones adicionales
+//     if (!nombres || !apellidos || !documento_identidad || !correo_electronico || !numero_telefono || !usuario || !contrasena) {
+//       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+//     }
+
+//     if (materias.length > 5) {
+//       return res.status(400).json({ error: 'No puedes seleccionar más de 5 materias.' });
+//     }
+
+//     // Validar que el usuario y el documento de identidad sean únicos
+//     const existingEstudiante = await Estudiante.findOne({ where: { documento_identidad } });
+//     if (existingEstudiante) {
+//       return res.status(400).json({ error: 'El documento de identidad ya está en uso' });
+//     }
+
+//     const existingUser = await Estudiante.findOne({ where: { usuario } });
+//     if (existingUser) {
+//       return res.status(400).json({ error: 'El nombre de usuario ya está en uso' });
+//     }
+
+//     // Hashear la contraseña
+//     const hashedPassword = await bcrypt.hash(contrasena, 10);
+
+//     // Crear el nuevo estudiante
+//     const nuevoEstudiante = await Estudiante.create({
+//       nombres,
+//       apellidos,
+//       documento_identidad,
+//       correo_electronico,
+//       numero_telefono,
+//       usuario,
+//       contrasena: hashedPassword
+//     });
+
+//     // Asignar materias al nuevo estudiante
+//     const entries = materias.map(materiaId => ({ id_estudiante: nuevoEstudiante.id, id_materia: materiaId }));
+//     await EstudianteMateria.bulkCreate(entries);
+
+//     res.status(201).json({ mensaje: 'Estudiante registrado exitosamente', estudiante: nuevoEstudiante });
+//   } catch (error) {
+//     console.error('Error al registrar estudiante:', error);
+//     res.status(500).json({ error: 'Error al registrar estudiante', detalles: error });
+//   }
+// };
 exports.createEstudiante = async (req, res) => {
   try {
-    const { nombres, apellidos, documento_identidad, correo_electronico, numero_telefono, usuario, contrasena, materias } = req.body;
+    const { nombres, apellidos, documento_identidad, correo_electronico, numero_telefono, usuario, contrasena } = req.body;
 
     // Validaciones adicionales
     if (!nombres || !apellidos || !documento_identidad || !correo_electronico || !numero_telefono || !usuario || !contrasena) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
-    }
-
-    if (materias.length > 5) {
-      return res.status(400).json({ error: 'No puedes seleccionar más de 5 materias.' });
     }
 
     // Validar que el usuario y el documento de identidad sean únicos
@@ -41,16 +85,14 @@ exports.createEstudiante = async (req, res) => {
       contrasena: hashedPassword
     });
 
-    // Asignar materias al nuevo estudiante
-    const entries = materias.map(materiaId => ({ id_estudiante: nuevoEstudiante.id, id_materia: materiaId }));
-    await EstudianteMateria.bulkCreate(entries);
-
     res.status(201).json({ mensaje: 'Estudiante registrado exitosamente', estudiante: nuevoEstudiante });
   } catch (error) {
     console.error('Error al registrar estudiante:', error);
     res.status(500).json({ error: 'Error al registrar estudiante', detalles: error });
   }
 };
+
+
   
   exports.getEstudiantes = async (req, res) => {
     try {

@@ -108,7 +108,7 @@ const Login = () => {
     <div className="login-container">
       <div className="card">
         <h2 className="titleLogin">Inicio de Sesión</h2>
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="form" onSubmit={handleSubmit} data-testid="login-form">
           <label className="label">
             Usuario:
             <input
@@ -117,8 +117,9 @@ const Login = () => {
               value={formulario.usuario}
               onChange={handleChange}
               className="input"
+              data-testid="input-usuario"
             />
-            {errores.usuario && <p className="error">{errores.usuario}</p>}
+            {errores.usuario && <p className="error" data-testid="error-usuario">{errores.usuario}</p>}
           </label>
           <label className="label">
             Contraseña:
@@ -128,20 +129,22 @@ const Login = () => {
               value={formulario.contrasena}
               onChange={handleChange}
               className="input"
+              data-testid="input-contrasena"
             />
-            {errores.contrasena && <p className="error">{errores.contrasena}</p>}
+            {errores.contrasena && <p className="error" data-testid="error-contrasena">{errores.contrasena}</p>}
           </label>
-          <button type="submit" className="button">
+          <button type="submit" className="button" data-testid="submit-button">
             Iniciar Sesión
           </button>
         </form>
-        {mensaje && <p className="success-message">{mensaje}</p>}
+        {mensaje && <p className="success-message" data-testid="success-message">{mensaje}</p>}
       </div>
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={modalContent.title}
         message={modalContent.message}
+        data-testid="modal"
       />
     </div>
   );

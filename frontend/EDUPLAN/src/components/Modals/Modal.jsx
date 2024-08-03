@@ -15,7 +15,7 @@ const Modal = ({ isOpen, onClose, title, message }) => {
           <p>{message}</p>
         </div>
         <div className="modal-footer">
-          <button onClick={onClose} className="button">Cerrar</button>
+          <button onClick={onClose} className="button" data-testid="close-modal">Cerrar</button>
         </div>
       </div>
     </div>
