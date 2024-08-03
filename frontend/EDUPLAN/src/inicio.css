@@ -160,10 +160,10 @@ footer{
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     text-align: center;
-
+    gap: 2rem;
   }
 
   .noticia-card h3{
@@ -181,7 +181,14 @@ footer{
     height: auto;
 }
 
-
+.noticia-date{
+    position: fixed;
+    align-self:flex-end;
+    top: 0.5rem;
+    margin-right: 0.8rem;
+    font: bold 1rem 'Roboto', sans-serif;
+    color: gray;
+}
 
 
 
@@ -286,10 +293,39 @@ footer{
     margin: auto
 }
 
+@media screen and (max-width: 1100px) {
+    
+    .Mapa{
+        display: none;
+    }
+    .Divcar{
+        width: 100%;
+    }
+
+    .section3{
+        display: none;
+    }
+
+    .section{
+        display: none;
+    }
+
+    .redes{
+        display: none;
+    }
+
+    .upper img{
+        height: 100px;
+    }
+
+    
+}
 
 @media screen and (max-width: 900px) {
-    .section{
+    .section2{
         padding: 0 50px;
+        height: 100%;
+        width: 100%;
     }
 
 
@@ -319,8 +355,9 @@ footer{
     }
 
 
-    .section{
-        padding: 0 50px;
+    .section2{
+        height: 100%;
+        width: 100%;
     }
 
     .titulito{
@@ -359,8 +396,9 @@ footer{
     }
     html{height: 100vh;}
 
-    .section{
-        padding: 1px;
+    .section2{
+        height: 100%;
+        width: 100%;
     }
 
     .titulito{

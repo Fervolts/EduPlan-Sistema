@@ -17,9 +17,9 @@ function AdministradorDashboard() {
       <div className="dashboard-box" onClick={() => window.location.href = "/registroAdmin"}>
         <FaQq size={90} color="#2c3e50" style={{marginRight: '30px'}} /> <p> Registrar Admin</p>
       </div>
-      <div className="dashboard-box" onClick={() => window.location.href = "/noticias"}>
+      {/* <div className="dashboard-box" onClick={() => window.location.href = "/noticias"}>
         <FaPen size={80} color="#2c3e50" style={{marginRight: '30px'}} /> <p>Noticias</p>
-      </div>
+      </div> */}
         </div>
         <div className='row'>
       <div className="dashboard-box " onClick={() => window.location.href = "/listadoProf"}>

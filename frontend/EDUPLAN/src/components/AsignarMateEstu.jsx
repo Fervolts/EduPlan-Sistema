@@ -1,10 +1,12 @@
 import  { useState, useEffect } from 'react';
 import './styles/Registros.css';
+import { useNavigate } from 'react-router-dom';
 
 const AsignarMaterias = () => {
   const [materias, setMaterias] = useState([]);
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]);
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   // Obtener el ID del estudiante del localStorage
   const userId = localStorage.getItem('userId');
@@ -57,7 +59,10 @@ const AsignarMaterias = () => {
       if (!response.ok) {
         throw new Error('Error al asignar materias');
       }
-      setMensaje('Materias asignadas correctamente.');
+      setMensaje('Materias asignadas correctamente, Redirigiendote...');
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
     } catch (error) {
       setMensaje('Error al asignar materias.');
       console.error('Error al asignar materias:', error);

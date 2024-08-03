@@ -7,9 +7,9 @@ function  
  NoticiaCard({ noticia }) {
   return (
     <div className="noticia-card">
+      <p className="noticia-date">{noticia.fecha}</p>
       <h3>{noticia.Titulo}</h3>
-      <p>Fecha: {noticia.fecha}</p>
-      <p>Descripción: {noticia.descripción}</p>
+      <p className="noticia-description">{noticia.descripción}</p>
     </div>
   );
 }
