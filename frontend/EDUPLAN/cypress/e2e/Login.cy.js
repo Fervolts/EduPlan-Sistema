@@ -1,9 +1,9 @@
-describe('Login and Modal Interaction', () => {
+describe('Interaccion Login y Modal', () => {
     beforeEach(() => {
       cy.visit('http://localhost:5173/login'); // Ajusta la ruta según la configuración de tu proyecto
     });
   
-    it('should display validation errors for empty required fields', () => {
+    it('Mostrando errores de validacion', () => {
       // Intenta enviar el formulario vacío
       cy.get('[data-testid=submit-button]').click();
   
@@ -12,7 +12,7 @@ describe('Login and Modal Interaction', () => {
       cy.get('[data-testid=error-contrasena]').should('be.visible');
     });
   
-    it('should display an error modal for incorrect login credentials', () => {
+    it('Display de error en forma de modal por credenciales incorrectas', () => {
       // Llena los campos con credenciales incorrectas
       cy.get('[data-testid=input-usuario]').type('PedroGonzalez');
       cy.get('[data-testid=input-contrasena]').type('Pedro123456');
@@ -37,7 +37,7 @@ describe('Login and Modal Interaction', () => {
     cy.get('[data-testid=modal]').should('not.exist');
   });
   
-    it('should display a success modal and navigate on successful login', () => {
+    it('inicio de sesión exitoso', () => {
       // Llena los campos con credenciales correctas
       cy.get('[data-testid=input-usuario]').type('AdolfoAdmin');
       cy.get('[data-testid=input-contrasena]').type('123456');
@@ -51,13 +51,6 @@ describe('Login and Modal Interaction', () => {
       // Intenta enviar el formulario
       cy.get('[data-testid=submit-button]').click();
   
-      // // Verifica que el modal de éxito aparezca
-      // cy.contains('Inicio de sesión exitoso').should('be.visible');
-      // cy.contains('¡Has iniciado sesión exitosamente!').should('be.visible');
-  
-      // // Verifica que la redirección ocurra después de 2 segundos
-      // cy.wait(2000);
-      // cy.url().should('eq', `${Cypress.config().baseUrl}/`);
-    });
+       });
   });
   

@@ -15,7 +15,7 @@ describe('Registro Estudiante Form', () => {
     cy.visit('http://localhost:5173/registroEstudiante');
   });
 
-  it('should display validation errors for empty required fields', () => {
+  it('Debe mostrar errores de validación para los campos obligatorios vacíos', () => {
     // Intenta enviar el formulario vacío
     cy.get('button[type=submit]').click();
 
@@ -25,7 +25,7 @@ describe('Registro Estudiante Form', () => {
   cy.get('label').contains('El campo correo electrónico es obligatorio').scrollIntoView().should('be.visible');
   });
 
-  it('should display validation error for invalid email', () => {
+  it('Debe mostrar un error de validación para el correo electrónico no válido', () => {
     // Llena los campos
     cy.get('input[name=nombres]').type('Juan');
     cy.get('input[name=apellidos]').type('Pérez');
@@ -42,7 +42,7 @@ describe('Registro Estudiante Form', () => {
     cy.contains('Correo electrónico inválido').should('be.visible');
   });
 
-  it('should submit the form correctly when all fields are valid', () => {
+  it('Debe enviar el formulario correctamente cuando todos los campos son válidos', () => {
     // Llena los campos
     cy.get('input[name=nombres]').type('Marcos');
     cy.get('input[name=apellidos]').type('Gonzalez');

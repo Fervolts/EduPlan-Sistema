@@ -67,3 +67,15 @@
     box-shadow: 0 0 10px var(--purpura);
     border: 0.5rem var(--purpura) solid;
   }
+
+@media screen and (max-width:1300px) {
+  .dashboard{
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 800px){
+  .row{
+    flex-direction: column;
+  }
+}
