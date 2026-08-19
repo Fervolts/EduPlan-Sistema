@@ -28,6 +28,8 @@ Top of the `<script>` block, four values:
 | `BOOKING_URL` | Target of the "Book Your Free Consultation" button. |
 | `SCROLL_OFFSET` | Pixels left above the widget when it scrolls. Raise it if the page has a sticky header covering content. |
 | `REMEMBER_UNLOCK` | `true` = a returning visitor on the same browser skips the email wall. `false` = gate every visit. |
+| `FILL_VIEWPORT` | `true` = the widget always stretches to at least the height left on screen, so the funnel page never shows through under the hero. |
+| `PAINT_HOST` | `true` = the GHL row/section around the code element gets the widget's background (only where it has none of its own), so GHL's default padding doesn't show as a strip. |
 
 Webhook payload (unchanged from the original): `name`, `firstName`, `lastName`,
 `email`, `risk_level`, `risk_score`, `dead_bodies`, `dead_body_count`,
@@ -57,7 +59,15 @@ Webhook payload (unchanged from the original): `name`, `firstName`, `lastName`,
   load, and falls back to the browser's print-to-PDF if the CDN is blocked.
 - **No `<form>` element.** GHL pages can already have a form wrapper, and a
   nested form submit reloads the page. Enter still submits the email wall.
-- **Sticky progress bar `z-index` lowered** to 20 so it sits under GHL's nav.
+- **Sticky progress bar `z-index` lowered** to 20 so it sits under GHL's nav,
+  and the root has no `overflow: hidden` (an `overflow` ancestor silently
+  cancels `position: sticky`).
+- **The widget fills the screen.** The landing screen is shorter than the
+  viewport, so the funnel page's own background showed through as a white bar
+  under the hero. The widget now measures the space actually left below itself
+  — accounting for a sticky GHL header — and stretches the hero into it, on
+  load, on resize and on every screen change. GHL's wrapper row/section is
+  painted to match, so its default padding can't show either.
 
 ## Bugs fixed along the way
 
@@ -78,6 +88,7 @@ Webhook payload (unchanged from the original): `name`, `firstName`, `lastName`,
 ## Verified
 
 Rendered inside a simulated GHL page (aggressive serif/centered theme CSS, sticky
-nav) at 1200px and 390px: all 13 questions, Back/Next gating, results scoring,
+nav) at 1200x900, 1440x700 and 390x844 — no page background visible below the
+hero at any of them — all 13 questions, Back/Next gating, results scoring,
 email wall validation, unlock with the webhook blocked, Start Over, no horizontal
 overflow, no console errors, and the funnel's own theme untouched.

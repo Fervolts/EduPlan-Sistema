@@ -71,7 +71,6 @@
     line-height: 1.4;
     text-align: left;
     width: 100%;
-    overflow: hidden; /* contains the hero's decorative layer */
   }
 
   /* ── SCREEN SWITCHING (driven by data-screen on the root) ───────── */
@@ -81,7 +80,12 @@
   #bsa-app .bsa-quiz-screen,
   #bsa-app .bsa-results { display: none; }
 
-  #bsa-app[data-screen="landing"] .bsa-hero { display: block; }
+  #bsa-app[data-screen="landing"] .bsa-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #bsa-app[data-screen="landing"] .bsa-hero-inner { width: 100%; }
 
   #bsa-app[data-screen="quiz"] .bsa-progress-wrap,
   #bsa-app[data-screen="quiz"] .bsa-quiz-outer,
@@ -811,6 +815,18 @@
   // on a repeat visit). Set to false to gate every single visit.
   var REMEMBER_UNLOCK = true;
 
+  // Stretch the widget so it always fills at least the screen. Without this
+  // the funnel page shows through as a white bar under the hero, because the
+  // landing screen is shorter than the viewport. Set to false to let the
+  // widget be exactly as tall as its content.
+  var FILL_VIEWPORT = true;
+
+  // Paint the GHL row/section wrapping this code element with the widget's
+  // own background, so GHL's default element/section padding doesn't show up
+  // as a white strip above or below. Only applied to wrappers that have no
+  // background of their own. Set to false to leave the GHL page alone.
+  var PAINT_HOST = true;
+
   /* ────────────────────────────────────────────────────────────────
      QUESTION DATA — copy lives here so the markup stays small and
      GHL's editor can't mangle 400 lines of hand-written HTML.
@@ -1103,6 +1119,63 @@
     if (el('cta-btn')) el('cta-btn').setAttribute('href', BOOKING_URL);
     renderQuestions();
     bindEvents();
+    paintHost();
+    fitViewport();
+
+    /* ── FILL THE SCREEN ──────────────────────────────────────────
+       The landing screen is shorter than the viewport, so whatever the
+       funnel page uses as its background (white, by default) shows up as a
+       bar underneath the hero. Stretching the widget to the space actually
+       left below it removes that bar on every screen size, and keeps
+       working when a sticky GHL header sits above it.
+       ─────────────────────────────────────────────────────────────── */
+    function fitViewport() {
+      if (!FILL_VIEWPORT) return;
+      try {
+        var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+        if (!vh) return;
+
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        var docTop = root.getBoundingClientRect().top + scrollY;
+        var avail = docTop < vh ? vh - docTop : vh;
+        if (avail < 480) avail = 480;
+
+        root.style.minHeight = avail + 'px';
+        var hero = root.querySelector('.bsa-hero');
+        if (hero) hero.style.minHeight = avail + 'px';
+      } catch (e) {}
+    }
+
+    var fitTimer = null;
+    function fitViewportSoon() {
+      if (fitTimer) clearTimeout(fitTimer);
+      fitTimer = setTimeout(fitViewport, 120);
+    }
+    window.addEventListener('resize', fitViewportSoon);
+    window.addEventListener('orientationchange', fitViewportSoon);
+    window.addEventListener('load', fitViewportSoon);
+
+    /* ── HOST PADDING ─────────────────────────────────────────────
+       GHL wraps a code element in a row/column/section that carry their
+       own padding. Any of that padding shows as a strip of page colour
+       around the widget, so give those wrappers the widget's background —
+       but only when they don't already have one of their own.
+       ─────────────────────────────────────────────────────────────── */
+    function paintHost() {
+      if (!PAINT_HOST) return;
+      try {
+        var bg = getComputedStyle(root).backgroundColor;
+        var node = root.parentElement;
+        var hops = 0;
+        while (node && node !== document.body && hops < 8) {
+          var own = getComputedStyle(node).backgroundColor;
+          var transparent = !own || own === 'transparent' || /rgba\(0,\s*0,\s*0,\s*0\)/.test(own);
+          if (transparent) node.style.backgroundColor = bg;
+          node = node.parentElement;
+          hops++;
+        }
+      } catch (e) {}
+    }
 
     /* ── FONT ─────────────────────────────────────────────────── */
     function loadFont() {
@@ -1185,7 +1258,10 @@
     }
 
     /* ── SCREENS ──────────────────────────────────────────────── */
-    function setScreen(name) { root.setAttribute('data-screen', name); }
+    function setScreen(name) {
+      root.setAttribute('data-screen', name);
+      fitViewport();
+    }
 
     function scrollToTop() {
       try {
