@@ -1,0 +1,1527 @@
+<!-- ==================================================================
+     THE BALANCE SHEET AUTOPSY — GoHighLevel funnel embed
+     ------------------------------------------------------------------
+     HOW TO INSTALL (GHL funnel / website page):
+       1. Open the page in the Funnel/Website Builder.
+       2. Add a Row -> add the element "Custom JS/HTML" (Code element).
+       3. Paste EVERYTHING in this file into that one element.
+       4. Set the element/section padding to 0 so the hero goes edge to edge.
+       5. Save -> Preview (the code element does NOT run inside the builder
+          canvas, only in Preview / on the live page).
+
+     NOTES FOR GHL:
+       - No <html>, <head>, <body> or <!DOCTYPE> tags: GHL strips them and
+         that is what breaks a full document when it is pasted in.
+       - Every style is scoped to #bsa-app and every class/id is prefixed
+         "bsa-", so nothing here can leak into the rest of the funnel page
+         (and GHL's theme CSS can't leak in either).
+       - No inline onclick handlers: all events are delegated, so the widget
+         still works when GHL re-renders or injects the block late.
+       - The script is wrapped in an IIFE with a re-run guard, so a double
+         render in preview can't throw "already declared" and kill the page.
+       - Page <title>, favicon and SEO go in GHL: Settings -> SEO Meta Data.
+
+     CONFIG lives at the top of the <script> block at the bottom of this file
+     (webhook URL, booking link, scroll offset).
+     ================================================================== -->
+
+<style>
+  /* ── SCOPED RESET (only inside #bsa-app) ───────────────────────── */
+  #bsa-app,
+  #bsa-app *,
+  #bsa-app *::before,
+  #bsa-app *::after { box-sizing: border-box; }
+
+  #bsa-app h1, #bsa-app h2, #bsa-app h3,
+  #bsa-app p, #bsa-app ol, #bsa-app ul, #bsa-app li,
+  #bsa-app div, #bsa-app form { margin: 0; padding: 0; }
+
+  #bsa-app button,
+  #bsa-app input {
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+
+  #bsa-app ol, #bsa-app ul { list-style: none; }
+  #bsa-app img { max-width: 100%; }
+
+  /* ── THEME TOKENS + APP SHELL ──────────────────────────────────── */
+  #bsa-app {
+    --bsa-navy: #103448;
+    --bsa-navy-dark: #0a2233;
+    --bsa-teal: #4C949D;
+    --bsa-teal-light: #77B7BC;
+    --bsa-teal-faint: #e8f4f5;
+    --bsa-red: #DD2D4A;
+    --bsa-red-dark: #b5203a;
+    --bsa-red-light: #FBD1D0;
+    --bsa-yellow: #e0a020;
+    --bsa-yellow-light: #fef6e4;
+    --bsa-dark: #103448;
+    --bsa-gray: #6B7280;
+    --bsa-light-gray: #EAE8E6;
+    --bsa-border: #dcdad8;
+
+    font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #F5F3F0;
+    color: var(--bsa-dark);
+    font-size: 16px;
+    line-height: 1.4;
+    text-align: left;
+    width: 100%;
+    overflow: hidden; /* contains the hero's decorative layer */
+  }
+
+  /* ── SCREEN SWITCHING (driven by data-screen on the root) ───────── */
+  #bsa-app .bsa-hero,
+  #bsa-app .bsa-progress-wrap,
+  #bsa-app .bsa-quiz-outer,
+  #bsa-app .bsa-quiz-screen,
+  #bsa-app .bsa-results { display: none; }
+
+  #bsa-app[data-screen="landing"] .bsa-hero { display: block; }
+
+  #bsa-app[data-screen="quiz"] .bsa-progress-wrap,
+  #bsa-app[data-screen="quiz"] .bsa-quiz-outer,
+  #bsa-app[data-screen="quiz"] .bsa-quiz-screen { display: block; }
+
+  #bsa-app[data-screen="results"] .bsa-quiz-outer { display: block; }
+  #bsa-app[data-screen="results"] .bsa-results { display: block; }
+
+  /* ── HERO ──────────────────────────────────────────────────────── */
+  #bsa-app .bsa-hero {
+    background: linear-gradient(135deg, #103448 0%, #0d2d40 50%, #0a2438 100%);
+    color: #fff;
+    text-align: center;
+    padding: 48px 24px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  #bsa-app .bsa-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234C949D' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  #bsa-app .bsa-hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
+  #bsa-app .bsa-hero-badge {
+    display: inline-block;
+    background: rgba(221,45,74,0.2);
+    border: 1px solid rgba(221,45,74,0.45);
+    color: #F26A8D;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  #bsa-app .bsa-hero h1 {
+    font-size: clamp(30px, 5.5vw, 50px);
+    font-weight: 900;
+    line-height: 1.08;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  #bsa-app .bsa-hero h1 span { color: var(--bsa-red); }
+  #bsa-app .bsa-hero p {
+    font-size: clamp(15px, 2.2vw, 18px);
+    color: rgba(255,255,255,0.78);
+    max-width: 560px;
+    margin: 0 auto 22px;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  #bsa-app .bsa-hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    flex-wrap: wrap;
+    margin: 0 0 22px;
+  }
+  #bsa-app .bsa-hero-stat { text-align: center; }
+  #bsa-app .bsa-hero-stat .bsa-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--bsa-teal-light);
+    line-height: 1.2;
+  }
+  #bsa-app .bsa-hero-stat .bsa-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+  #bsa-app .bsa-hero-checks {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin-bottom: 24px;
+  }
+  #bsa-app .bsa-hero-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.82);
+  }
+  #bsa-app .bsa-hero-check::before {
+    content: '\2713';
+    color: var(--bsa-teal-light);
+    font-weight: 800;
+    font-size: 13px;
+  }
+  #bsa-app .bsa-hero-start {
+    background: var(--bsa-red);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 16px 44px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 8px 22px rgba(221,45,74,0.32);
+    max-width: 100%;
+  }
+  #bsa-app .bsa-hero-start:hover { background: var(--bsa-red-dark); transform: translateY(-1px); }
+  #bsa-app .bsa-hero-note {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 13px;
+  }
+
+  /* ── PROGRESS BAR ──────────────────────────────────────────────── */
+  #bsa-app .bsa-progress-wrap {
+    background: #fff;
+    border-bottom: 1px solid var(--bsa-border);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+  #bsa-app .bsa-progress-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  #bsa-app .bsa-progress-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--bsa-light-gray);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #bsa-app .bsa-progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--bsa-navy), var(--bsa-teal));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+  #bsa-app .bsa-progress-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bsa-gray);
+    white-space: nowrap;
+  }
+
+  /* ── QUIZ CONTAINER ────────────────────────────────────────────── */
+  #bsa-app .bsa-quiz-outer {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+  }
+
+  #bsa-app .bsa-question-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--bsa-border);
+    padding: 36px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+    display: none;
+    animation: bsa-slide-in 0.3s ease;
+  }
+  #bsa-app .bsa-question-card.bsa-active { display: block; }
+
+  @keyframes bsa-slide-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  #bsa-app .bsa-q-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bsa-teal);
+    margin-bottom: 12px;
+  }
+  #bsa-app .bsa-q-text {
+    font-size: clamp(18px, 2.5vw, 22px);
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    color: var(--bsa-dark);
+  }
+  #bsa-app .bsa-q-why {
+    font-size: 14px;
+    color: var(--bsa-gray);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    padding-left: 14px;
+    border-left: 3px solid var(--bsa-border);
+  }
+
+  /* ── QBO HOW-TO ────────────────────────────────────────────────── */
+  #bsa-app .bsa-qbo-box {
+    background: var(--bsa-teal-faint);
+    border: 1px solid rgba(76,148,157,0.3);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 28px;
+  }
+  #bsa-app .bsa-qbo-box-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bsa-teal);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #bsa-app .bsa-qbo-box-title::before { content: '\1F50D'; font-size: 13px; }
+  #bsa-app .bsa-qbo-steps { counter-reset: bsa-steps; }
+  #bsa-app .bsa-qbo-steps li {
+    counter-increment: bsa-steps;
+    font-size: 13px;
+    color: #1a5c63;
+    line-height: 1.5;
+    padding: 4px 0 4px 24px;
+    position: relative;
+  }
+  #bsa-app .bsa-qbo-steps li::before {
+    content: counter(bsa-steps);
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    background: var(--bsa-teal);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── ANSWER BUTTONS ────────────────────────────────────────────── */
+  #bsa-app .bsa-answers { display: flex; flex-direction: column; gap: 10px; }
+  #bsa-app .bsa-answer-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 2px solid var(--bsa-border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--bsa-dark);
+    text-align: left;
+    line-height: 1.4;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  #bsa-app .bsa-answer-btn:hover {
+    border-color: var(--bsa-teal);
+    background: var(--bsa-teal-faint);
+  }
+  /* Highlight follows the RISK of the answer, not the yes/no wording,
+     so "good" answers are always teal and "bad" answers always red. */
+  #bsa-app .bsa-answer-btn.bsa-sel-risk {
+    border-color: var(--bsa-red);
+    background: var(--bsa-red-light);
+    color: var(--bsa-red-dark);
+  }
+  #bsa-app .bsa-answer-btn.bsa-sel-clear {
+    border-color: var(--bsa-teal);
+    background: var(--bsa-teal-faint);
+    color: var(--bsa-navy);
+  }
+  #bsa-app .bsa-answer-btn.bsa-sel-unsure {
+    border-color: var(--bsa-yellow);
+    background: var(--bsa-yellow-light);
+    color: #7a5500;
+  }
+  #bsa-app .bsa-answer-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: var(--bsa-light-gray);
+  }
+
+  /* ── NAV BUTTONS ───────────────────────────────────────────────── */
+  #bsa-app .bsa-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  #bsa-app .bsa-nav-spacer { display: block; }
+  #bsa-app .bsa-btn-back {
+    background: none;
+    border: none;
+    color: var(--bsa-gray);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  #bsa-app .bsa-btn-back:hover { color: var(--bsa-dark); }
+  #bsa-app .bsa-btn-next {
+    background: var(--bsa-navy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  #bsa-app .bsa-btn-next.bsa-enabled { opacity: 1; pointer-events: auto; }
+  #bsa-app .bsa-btn-next.bsa-enabled:hover { background: var(--bsa-navy-dark); }
+
+  /* ── RESULTS ───────────────────────────────────────────────────── */
+  #bsa-app .bsa-results { animation: bsa-slide-in 0.4s ease; }
+
+  #bsa-app .bsa-risk-banner {
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    margin-bottom: 32px;
+    background: var(--bsa-navy);
+    color: #fff;
+  }
+  #bsa-app .bsa-risk-banner.bsa-critical,
+  #bsa-app .bsa-risk-banner.bsa-high { background: linear-gradient(135deg, #DD2D4A, #b5203a); color: #fff; }
+  #bsa-app .bsa-risk-banner.bsa-moderate { background: linear-gradient(135deg, #e0a020, #b87e10); color: #fff; }
+  #bsa-app .bsa-risk-banner.bsa-low { background: linear-gradient(135deg, #4C949D, #3a7a82); color: #fff; }
+  #bsa-app .bsa-risk-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 10px;
+  }
+  #bsa-app .bsa-risk-title {
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 900;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: inherit;
+  }
+  #bsa-app .bsa-risk-subtitle {
+    font-size: 16px;
+    opacity: 0.88;
+    line-height: 1.5;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  #bsa-app .bsa-score-pill {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 100px;
+    padding: 6px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 18px;
+  }
+
+  /* ── FINDINGS ──────────────────────────────────────────────────── */
+  #bsa-app .bsa-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bsa-gray);
+    margin-bottom: 16px;
+  }
+  #bsa-app .bsa-findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  #bsa-app .bsa-finding-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--bsa-border);
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    page-break-inside: avoid;
+  }
+  #bsa-app .bsa-finding-card.bsa-red { border-left: 4px solid var(--bsa-red); }
+  #bsa-app .bsa-finding-card.bsa-yellow { border-left: 4px solid var(--bsa-yellow); }
+  #bsa-app .bsa-finding-card.bsa-green { border-left: 4px solid var(--bsa-teal); }
+  #bsa-app .bsa-finding-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  #bsa-app .bsa-finding-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  #bsa-app .bsa-finding-desc { font-size: 13px; color: var(--bsa-gray); line-height: 1.5; }
+
+  /* ── CTA ───────────────────────────────────────────────────────── */
+  #bsa-app .bsa-cta-box {
+    background: var(--bsa-navy);
+    border-radius: 16px;
+    padding: 40px 36px;
+    text-align: center;
+    color: #fff;
+    margin-top: 8px;
+  }
+  #bsa-app .bsa-cta-box h2 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 1.2;
+  }
+  #bsa-app .bsa-cta-box p {
+    color: rgba(255,255,255,0.72);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 auto 28px;
+    max-width: 440px;
+  }
+  #bsa-app .bsa-cta-btn {
+    display: inline-block;
+    background: var(--bsa-red);
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 36px;
+    border-radius: 10px;
+    transition: background 0.15s;
+    border: none;
+    cursor: pointer;
+  }
+  #bsa-app .bsa-cta-btn:hover,
+  #bsa-app .bsa-cta-btn:focus { background: var(--bsa-red-dark); color: #fff; text-decoration: none; }
+  #bsa-app .bsa-cta-note { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 14px; }
+
+  #bsa-app .bsa-retake-row { text-align: center; margin-top: 24px; }
+  #bsa-app .bsa-btn-retake {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ── EMAIL WALL ────────────────────────────────────────────────── */
+  #bsa-app .bsa-gated-wrap { position: relative; }
+  #bsa-app .bsa-report-body.bsa-locked {
+    max-height: 340px;
+    overflow: hidden;
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+  }
+  #bsa-app .bsa-email-wall { display: none; }
+  #bsa-app .bsa-email-wall.bsa-show {
+    display: flex;
+    justify-content: center;
+    margin-top: -100px;
+    position: relative;
+    z-index: 2;
+  }
+  #bsa-app .bsa-wall-card {
+    background: #fff;
+    border: 1px solid var(--bsa-border);
+    border-radius: 16px;
+    box-shadow: 0 14px 44px rgba(16,52,72,0.18);
+    padding: 32px 30px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+  #bsa-app .bsa-wall-lock {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--bsa-red-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 16px;
+  }
+  #bsa-app .bsa-wall-card h3 {
+    font-size: 21px; font-weight: 800; color: var(--bsa-dark);
+    margin-bottom: 8px; letter-spacing: -0.01em; line-height: 1.25;
+  }
+  #bsa-app .bsa-wall-card p {
+    font-size: 14px; color: var(--bsa-gray); line-height: 1.55; margin-bottom: 22px;
+  }
+  #bsa-app .bsa-wall-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+  #bsa-app .bsa-wall-form input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--bsa-border);
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.3;
+    color: var(--bsa-dark);
+    background: #fff;
+    transition: border-color 0.15s;
+  }
+  #bsa-app .bsa-wall-form input:focus { outline: none; border-color: var(--bsa-teal); }
+  #bsa-app .bsa-wall-form input.bsa-err { border-color: var(--bsa-red); background: #fff6f7; }
+  #bsa-app .bsa-wall-submit {
+    background: var(--bsa-red);
+    color: #fff; border: none;
+    border-radius: 10px;
+    padding: 15px 20px;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 8px 22px rgba(221,45,74,0.28);
+  }
+  #bsa-app .bsa-wall-submit:hover { background: var(--bsa-red-dark); transform: translateY(-1px); }
+  #bsa-app .bsa-wall-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+  #bsa-app .bsa-wall-err-msg { display: none; font-size: 12px; color: var(--bsa-red-dark); font-weight: 600; }
+  #bsa-app .bsa-wall-err-msg.bsa-show { display: block; }
+  #bsa-app .bsa-wall-note { font-size: 11px; color: var(--bsa-gray); margin-top: 16px; line-height: 1.5; }
+
+  /* ── DOWNLOAD BAR (post-unlock) ────────────────────────────────── */
+  #bsa-app .bsa-download-bar { display: none; margin-bottom: 24px; }
+  #bsa-app .bsa-download-bar.bsa-show { display: block; }
+  #bsa-app .bsa-unlock-tag {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--bsa-teal); margin-bottom: 10px;
+  }
+  #bsa-app .bsa-download-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--bsa-teal); color: #fff;
+    border: none; border-radius: 10px;
+    padding: 15px 28px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    width: 100%; justify-content: center;
+  }
+  #bsa-app .bsa-download-btn:hover { background: #3a7a82; }
+  #bsa-app .bsa-download-btn:disabled { opacity: 0.6; cursor: default; }
+
+  /* ── PRINT (fallback when the PDF library is blocked) ──────────── */
+  @media print {
+    #bsa-app .bsa-progress-wrap,
+    #bsa-app .bsa-download-bar,
+    #bsa-app .bsa-email-wall,
+    #bsa-app .bsa-retake-row { display: none !important; }
+    #bsa-app .bsa-report-body.bsa-locked {
+      max-height: none; overflow: visible; filter: none; pointer-events: auto;
+      -webkit-mask-image: none; mask-image: none;
+    }
+  }
+
+  @media (max-width: 540px) {
+    #bsa-app .bsa-question-card,
+    #bsa-app .bsa-cta-box { padding: 24px 20px; }
+    #bsa-app .bsa-risk-banner { padding: 28px 20px; }
+    #bsa-app .bsa-hero { padding: 36px 20px 38px; }
+    #bsa-app .bsa-hero-stats { gap: 22px; margin-bottom: 18px; }
+    #bsa-app .bsa-hero-checks { gap: 6px 16px; margin-bottom: 20px; }
+    #bsa-app .bsa-quiz-outer { padding: 20px 16px 56px; }
+    #bsa-app .bsa-hero-start { width: 100%; padding: 16px 20px; }
+    #bsa-app .bsa-nav-row { margin-top: 22px; }
+  }
+</style>
+
+<div id="bsa-app" data-screen="landing">
+
+  <!-- HERO / LANDING -->
+  <div class="bsa-hero">
+    <div class="bsa-hero-inner">
+      <div class="bsa-hero-badge">Free Assessment</div>
+      <h1>The Balance Sheet<br><span>Autopsy</span></h1>
+      <p>Find out if your books are hiding dead bodies &mdash; before they surface at the worst possible moment. 13 quick questions, with step-by-step QuickBooks instructions for each.</p>
+      <div class="bsa-hero-stats">
+        <div class="bsa-hero-stat">
+          <div class="bsa-num">13</div>
+          <div class="bsa-label">Diagnostic Questions</div>
+        </div>
+        <div class="bsa-hero-stat">
+          <div class="bsa-num">~5</div>
+          <div class="bsa-label">Minutes to Complete</div>
+        </div>
+        <div class="bsa-hero-stat">
+          <div class="bsa-num">100%</div>
+          <div class="bsa-label">Free</div>
+        </div>
+      </div>
+      <div class="bsa-hero-checks">
+        <span class="bsa-hero-check">Built for QuickBooks Online</span>
+        <span class="bsa-hero-check">Instant personalized risk report</span>
+      </div>
+      <button type="button" class="bsa-hero-start" data-bsa-action="start">Start My Autopsy &rarr;</button>
+      <div class="bsa-hero-note">&#9201; About 5 minutes &middot; we'll show you exactly where to look</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="bsa-progress-wrap">
+    <div class="bsa-progress-inner">
+      <div class="bsa-progress-bar-bg">
+        <div class="bsa-progress-bar-fill" data-bsa-el="progress-fill"></div>
+      </div>
+      <div class="bsa-progress-label" data-bsa-el="progress-label">1 of 13</div>
+    </div>
+  </div>
+
+  <div class="bsa-quiz-outer">
+
+    <!-- QUESTION CARDS ARE RENDERED HERE BY THE SCRIPT -->
+    <div class="bsa-quiz-screen" data-bsa-el="quiz-screen"></div>
+
+    <!-- RESULTS -->
+    <div class="bsa-results">
+
+      <div class="bsa-download-bar" data-bsa-el="download-bar">
+        <div class="bsa-unlock-tag">&#10003; Full report unlocked</div>
+        <button type="button" class="bsa-download-btn" data-bsa-el="dl-btn" data-bsa-action="download">&#11015; Download Full Report (PDF)</button>
+      </div>
+
+      <!-- Everything inside pdf-area is what gets exported to PDF -->
+      <div data-bsa-el="pdf-area">
+
+        <div class="bsa-risk-banner" data-bsa-el="risk-banner">
+          <div class="bsa-risk-label" data-bsa-el="risk-label">Your Risk Level</div>
+          <div class="bsa-risk-title" data-bsa-el="risk-title"></div>
+          <div class="bsa-risk-subtitle" data-bsa-el="risk-subtitle"></div>
+          <div class="bsa-score-pill" data-bsa-el="score-pill"></div>
+        </div>
+
+        <div class="bsa-gated-wrap">
+
+          <div class="bsa-report-body" data-bsa-el="report-body">
+
+            <div data-bsa-el="red-flags-section" style="display:none; margin-bottom:32px;">
+              <div class="bsa-section-title">&#128680; Dead Bodies Found</div>
+              <div class="bsa-findings-list" data-bsa-el="red-flags-list"></div>
+            </div>
+
+            <div data-bsa-el="warnings-section" style="display:none; margin-bottom:32px;">
+              <div class="bsa-section-title">&#9888;&#65039; Worth a Closer Look</div>
+              <div class="bsa-findings-list" data-bsa-el="warnings-list"></div>
+            </div>
+
+            <div data-bsa-el="clear-section" style="display:none; margin-bottom:32px;">
+              <div class="bsa-section-title">&#9989; Looking Good</div>
+              <div class="bsa-findings-list" data-bsa-el="clear-list"></div>
+            </div>
+
+            <div class="bsa-cta-box">
+              <h2>Ready to Clean Up the Crime Scene?</h2>
+              <p>A Balance Sheet Cleanup consultation gives you a clear picture of what's wrong, what it means for your taxes, and exactly what it'll take to fix it.</p>
+              <a class="bsa-cta-btn" data-bsa-el="cta-btn" href="https://twofold.cpa" target="_blank" rel="noopener">Book Your Free Consultation &rarr;</a>
+              <div class="bsa-cta-note">30 minutes &middot; No obligation &middot; We'll dig in together</div>
+            </div>
+
+          </div>
+
+          <!-- EMAIL WALL (no <form> tag on purpose: GHL pages can already
+               have a form wrapper, and a nested form reloads the page) -->
+          <div class="bsa-email-wall" data-bsa-el="email-wall">
+            <div class="bsa-wall-card">
+              <div class="bsa-wall-lock">&#128274;</div>
+              <h3 data-bsa-el="wall-title">Your full autopsy report is ready</h3>
+              <p data-bsa-el="wall-sub">Enter your name and email to unlock every finding, what it means for your taxes, and download the full PDF report.</p>
+              <div class="bsa-wall-form">
+                <input type="text" data-bsa-el="lead-name" name="bsa_name" placeholder="Your name" autocomplete="name" required>
+                <input type="email" data-bsa-el="lead-email" name="bsa_email" placeholder="Your email address" autocomplete="email" inputmode="email" required>
+                <div class="bsa-wall-err-msg" data-bsa-el="wall-err">Please enter your name and a valid email address.</div>
+                <button type="button" class="bsa-wall-submit" data-bsa-el="lead-submit" data-bsa-action="unlock">Unlock My Full Report &rarr;</button>
+              </div>
+              <div class="bsa-wall-note">&#128274; We respect your privacy. No spam &mdash; just your report and the occasional helpful tip. Unsubscribe anytime.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bsa-retake-row">
+        <button type="button" class="bsa-btn-retake" data-bsa-action="retake">&#8617; Start Over</button>
+      </div>
+
+    </div><!-- /results -->
+  </div><!-- /quiz-outer -->
+</div><!-- /#bsa-app -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* ────────────────────────────────────────────────────────────────
+     CONFIG — edit these four lines only
+     ──────────────────────────────────────────────────────────────── */
+
+  // GHL Inbound Webhook: Automation > Workflows > new Workflow >
+  // Trigger "Inbound Webhook" > copy the URL and paste it here.
+  var WEBHOOK_URL   = 'https://services.leadconnectorhq.com/hooks/dlMir7oMi6HNsX9TdR3d/webhook-trigger/47d87384-3370-4ca3-8646-33de4f66eac8';
+
+  // Where the "Book Your Free Consultation" button goes.
+  var BOOKING_URL   = 'https://twofold.cpa';
+
+  // Extra pixels to leave above the widget when it scrolls — raise this
+  // if your GHL page has a sticky/floating header covering the content.
+  var SCROLL_OFFSET = 20;
+
+  // Remember an unlocked report on this browser (skips the email wall
+  // on a repeat visit). Set to false to gate every single visit.
+  var REMEMBER_UNLOCK = true;
+
+  /* ────────────────────────────────────────────────────────────────
+     QUESTION DATA — copy lives here so the markup stays small and
+     GHL's editor can't mangle 400 lines of hand-written HTML.
+     pts: 2 = red flag, 1 = not sure, 0 = clear
+     ──────────────────────────────────────────────────────────────── */
+  var QUESTIONS = [
+    {
+      label: 'Negative Bank Balance',
+      q: 'Does your QuickBooks balance sheet show a negative bank balance (shown in red or parentheses)?',
+      why: "A negative bank balance in QBO almost always means transactions are miscoded, duplicated, or missing entirely. It's one of the most common red flags — and one of the most ignored.",
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports</strong> in the left menu',
+        'Search for and open <strong>Balance Sheet</strong>',
+        'Set the date range to <strong>Today</strong>',
+        'Look under <strong>Assets &rarr; Bank Accounts</strong> — any amount in red or in parentheses is negative'
+      ],
+      answers: [
+        { icon: '😬', text: 'Yes — I see a negative balance', val: 'yes', pts: 2 },
+        { icon: '✅', text: 'No — all bank balances look positive', val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I'm not sure how to read it", val: 'notsure', pts: 1 }
+      ],
+      yes: 'Your QBO shows a negative bank balance — a classic sign of duplicate entries, missing deposits, or miscoded transactions.',
+      notsure: "You weren't sure about your bank balances, which means they haven't been reviewed closely enough."
+    },
+    {
+      label: 'Stale Undeposited Funds',
+      q: 'Do you have an "Undeposited Funds" balance that\'s been sitting there for more than 30 days?',
+      why: 'Undeposited Funds is a holding account — money should flow through it quickly. A large or stale balance usually means payments were entered twice, or bank deposits were never properly matched in QBO.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Look under <strong>Assets &rarr; Other Current Assets</strong>',
+        'Find <strong>Undeposited Funds</strong> — click on the dollar amount to see what\'s in there',
+        'Check the dates on those transactions — anything older than 30 days is a flag'
+      ],
+      answers: [
+        { icon: '😬', text: "Yes — there's a stale balance in Undeposited Funds", val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — it's zero or clears out quickly", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I didn't know that account existed", val: 'notsure', pts: 1 }
+      ],
+      yes: 'You have old balances in Undeposited Funds — likely caused by payments entered twice or deposits never properly matched.',
+      notsure: "Undeposited Funds hasn't been reviewed — it may be hiding duplicate income entries."
+    },
+    {
+      label: '90+ Day Receivables',
+      q: 'Do you have Accounts Receivable balances that are more than 90 days old?',
+      why: "Old A/R usually means one of two things: customers who aren't paying, or invoices that were entered in QBO but the payment was recorded differently (so it looks like they still owe you when they don't). Either way, it's a problem.",
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports</strong> and search for <strong>Accounts Receivable Aging Summary</strong>',
+        'Run the report as of today',
+        'Look at the <strong>91-120 days</strong> and <strong>120+ days</strong> columns',
+        'If there are balances in those columns, you have stale A/R'
+      ],
+      answers: [
+        { icon: '😬', text: 'Yes — I have old outstanding invoices', val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — A/R is current or we don't invoice customers", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I haven't looked at that report", val: 'notsure', pts: 1 }
+      ],
+      yes: 'You have A/R over 90 days old — either uncollected revenue or phantom invoices that were actually paid a different way.',
+      notsure: 'Your Accounts Receivable Aging hasn\'t been reviewed. Old receivables are one of the most common balance sheet issues.'
+    },
+    {
+      label: 'Dormant Owner Loans',
+      q: "Is there a loan on your balance sheet — to or from an owner — that hasn't changed in over a year?",
+      why: 'Owner loans that never move are a major red flag for the IRS and for your business health. They often represent personal expenses run through the business that were never properly categorized, or distributions that were called "loans" but never repaid.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Look under <strong>Assets</strong> for any account named "Loan to Owner," "Due from Owner," "Officer Loan," or similar',
+        'Also check <strong>Liabilities</strong> for "Loan from Owner," "Due to Officer," "Shareholder Loan," or similar',
+        'Click the balance to see when it last changed'
+      ],
+      answers: [
+        { icon: '😬', text: "Yes — there's an owner loan that hasn't moved", val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — no owner loans or they're actively tracked", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I see something but I'm not sure what it is", val: 'notsure', pts: 1 }
+      ],
+      yes: "There's an owner loan on your books that hasn't moved — often a sign of personal expenses run through the business or undocumented distributions.",
+      notsure: "There may be an owner loan account you haven't identified — this is a frequent IRS red flag."
+    },
+    {
+      label: 'QBO Never Reconciled',
+      clearLabel: 'Bank Accounts Reconciled',
+      q: 'Have your bank accounts ever been reconciled in QuickBooks — not just the bank statement, but the QBO reconciliation tool?',
+      why: 'Reconciling your bank statement on paper is not the same as reconciling in QBO. If QBO has never been formally reconciled, there could be years of duplicate transactions, phantom expenses, or missed deposits hiding in your books.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Click the <strong>Settings gear icon</strong> (top right)',
+        'Under <strong>Tools</strong>, click <strong>Reconcile</strong>',
+        'Select your main checking account',
+        'QBO will show you the last reconciled date — if it says "Never" or is over 3 months ago, that\'s a red flag'
+      ],
+      answers: [
+        { icon: '✅', text: 'Yes — accounts are reconciled monthly in QBO', val: 'yes', pts: 0 },
+        { icon: '😬', text: "No — we've never done this in QBO", val: 'no', pts: 2 },
+        { icon: '🤷', text: "Not Sure — I didn't know QBO had a reconciliation tool", val: 'notsure', pts: 1 }
+      ],
+      yes: 'Your accounts have never been formally reconciled in QBO — without this, duplicate and phantom transactions can accumulate for years.',
+      notsure: "You weren't aware of the QBO reconciliation tool, which means it likely hasn't been done."
+    },
+    {
+      label: 'Ask My Accountant / Suspense',
+      q: 'Does your balance sheet show an "Ask My Accountant" or "Uncategorized Asset/Expense" account with a balance?',
+      why: '"Ask My Accountant" is a parking lot for transactions nobody knew how to categorize. If it has a balance, that money is sitting in limbo — unclassified, unreported, and potentially creating tax problems you don\'t know about.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Scroll through all sections looking for accounts named <strong>"Ask My Accountant," "Uncategorized Asset," "Suspense,"</strong> or <strong>"Opening Balance Equity"</strong>',
+        'Any balance in these accounts is a red flag'
+      ],
+      answers: [
+        { icon: '😬', text: 'Yes — I see one of those accounts with a balance', val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — I don't see any of those accounts", val: 'no', pts: 0 },
+        { icon: '🤷', text: 'Not Sure — I see something that might be it', val: 'notsure', pts: 1 }
+      ],
+      yes: "You have a balance in a catch-all account like 'Ask My Accountant' — money in limbo that's likely creating unreported tax issues.",
+      notsure: 'There may be uncategorized transactions sitting in a holding account — worth checking.'
+    },
+    {
+      label: 'Opening Balance Equity',
+      q: 'Does your balance sheet have an "Opening Balance Equity" account with a balance?',
+      why: 'Opening Balance Equity is a temporary account QBO uses when you first set up. It should be zero. If it has a balance, it usually means accounts were set up incorrectly from the start and your equity numbers are wrong — which means your profit figures may be wrong too.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Scroll to the bottom of the report to the <strong>Equity section</strong>',
+        'Look for an account called <strong>"Opening Balance Equity"</strong>',
+        "If it exists and has any balance (positive or negative), that's a red flag"
+      ],
+      answers: [
+        { icon: '😬', text: "Yes — there's a balance in Opening Balance Equity", val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — that account is zero or doesn't exist", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I'm not sure where to look", val: 'notsure', pts: 1 }
+      ],
+      yes: 'Opening Balance Equity has a balance — this means your books were set up incorrectly from the start and your equity numbers are off.',
+      notsure: "You weren't sure about the Opening Balance Equity account. If it has a balance, your foundational numbers are wrong."
+    },
+    {
+      label: 'Fixed Assets, No Depreciation',
+      q: 'Do you have fixed assets (equipment, vehicles, furniture) on your balance sheet with no accumulated depreciation?',
+      why: "If your business owns assets but there's no depreciation being recorded, you're likely overstating your assets and missing out on legitimate tax deductions. This is extremely common when books are set up without CPA guidance.",
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Look under <strong>Assets &rarr; Fixed Assets</strong> (or Long-Term Assets)',
+        'You should see asset accounts AND a corresponding <strong>"Accumulated Depreciation"</strong> line for each',
+        "If you see assets but no Accumulated Depreciation accounts, that's a red flag"
+      ],
+      answers: [
+        { icon: '😬', text: 'Yes — I have fixed assets but no depreciation accounts', val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — I have depreciation accounts, or I don't own business assets", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I see assets but I'm not sure about depreciation", val: 'notsure', pts: 1 }
+      ],
+      yes: "You have fixed assets with no depreciation being recorded — you're overstating your assets and missing real tax deductions.",
+      notsure: 'It looks like you may have assets without depreciation tracking — a common oversight that costs real money at tax time.'
+    },
+    {
+      label: 'Sales Tax Mismatch',
+      q: 'Do you have sales tax payable on your balance sheet — and does it match what you actually owe to the state?',
+      why: "Sales tax liability mismatches are a ticking clock. If QBO shows you owe more (or less) than you've actually paid, it means sales tax was being recorded incorrectly. States do audit this, and the penalties can be significant.",
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Look under <strong>Liabilities &rarr; Current Liabilities</strong> for <strong>"Sales Tax Payable"</strong>',
+        'Then go to <strong>Taxes &rarr; Sales Tax</strong> to see what QBO thinks you owe',
+        'Compare that to your actual state filings — any discrepancy is a red flag'
+      ],
+      answers: [
+        { icon: '😬', text: "Yes — the numbers don't match or I'm not sure they do", val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — sales tax is tracked and filed correctly, or I don't collect sales tax", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I haven't compared these before", val: 'notsure', pts: 1 }
+      ],
+      yes: "Your sales tax payable doesn't match what's actually been filed — this is a state audit risk.",
+      notsure: "You haven't compared your QBO sales tax balance to actual filings — a mismatch here can trigger state penalties."
+    },
+    {
+      label: 'Ghost Payables',
+      q: "Does your Accounts Payable balance include bills from vendors you've already paid — or old bills that were never cleared?",
+      why: 'Stale payables inflate your liabilities and can wreck your cash flow picture. This usually happens when payments are entered as expenses directly instead of being applied against the open bill — so QBO thinks you still owe money you\'ve already paid.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports</strong> and search for <strong>Accounts Payable Aging Summary</strong>',
+        'Run it as of today',
+        'Look at the <strong>91-120</strong> and <strong>120+ days</strong> columns',
+        "Click on any old balance — if the vendor has been paid in real life but still shows here, that's the dead body"
+      ],
+      answers: [
+        { icon: '😬', text: "Yes — I see old balances for vendors I've already paid", val: 'yes', pts: 2 },
+        { icon: '✅', text: "No — A/P is clean, or I don't use the bill feature", val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I haven't looked at this before", val: 'notsure', pts: 1 }
+      ],
+      yes: "Your A/P shows balances for vendors you've already paid — classic ghost payables that overstate your liabilities.",
+      notsure: "You haven't reviewed your A/P aging — old vendor balances may be sitting in your books that don't reflect reality."
+    },
+    {
+      label: "Equity Doesn't Make Sense",
+      q: 'Does your equity section look right — do the numbers make sense given the age and profitability of your business?',
+      why: 'Equity is the "net worth" of your business. If you\'ve been profitable for years but equity looks small, zero, or negative, it\'s a sign that distributions, owner draws, or loans have been misclassified — or that your P&L isn\'t capturing income correctly.',
+      howTitle: 'How to Check in QBO',
+      steps: [
+        'Go to <strong>Reports &rarr; Balance Sheet</strong>',
+        'Scroll to the bottom to the <strong>Equity section</strong>',
+        'Look at <strong>Retained Earnings</strong> and <strong>Net Income</strong>',
+        "Ask yourself: does this number make sense given how long you've been in business and what you've earned?"
+      ],
+      answers: [
+        { icon: '😬', text: "No — the equity looks wrong or doesn't make sense", val: 'yes', pts: 2 },
+        { icon: '✅', text: 'Yes — equity looks reasonable for my business', val: 'no', pts: 0 },
+        { icon: '🤷', text: "Not Sure — I've never really looked at equity", val: 'notsure', pts: 1 }
+      ],
+      yes: "Your equity doesn't reflect your business history — distributions, draws, or loans are likely misclassified.",
+      notsure: "You've never closely looked at your equity section — and if it's wrong, your P&L may be wrong too."
+    },
+    {
+      label: 'No CPA Balance Sheet Review',
+      clearLabel: 'CPA Balance Sheet Review',
+      q: 'Has your balance sheet ever been reviewed by a CPA — not just your tax preparer at year end, but someone who looked at it in detail?',
+      why: "Most tax preparers work from whatever QBO data they're given. If no one has actually audited the balance sheet itself, errors can compound year over year. By the time someone looks closely, what started as a small mistake can be years of messy books.",
+      howTitle: 'How to Check',
+      steps: [
+        'Think about the last time a CPA (not just a bookkeeper) reviewed your balance sheet line by line',
+        'Did they ask you about specific accounts, stale balances, or equity transactions?',
+        "If you're not sure what they looked at — chances are it wasn't the balance sheet"
+      ],
+      answers: [
+        { icon: '✅', text: 'Yes — a CPA has reviewed my balance sheet in detail', val: 'yes', pts: 0 },
+        { icon: '😬', text: "No — it's only been reviewed at tax time, if at all", val: 'no', pts: 2 },
+        { icon: '🤷', text: "Not Sure — I don't know what my CPA looks at", val: 'notsure', pts: 1 }
+      ],
+      yes: 'Your balance sheet has only been reviewed at tax time (if at all) — errors have likely compounded year over year.',
+      notsure: "You're not sure what your CPA has reviewed. If the balance sheet wasn't explicitly examined, issues may have gone undetected."
+    },
+    {
+      label: 'Unexplained Account Balances',
+      clearLabel: 'All Account Balances Understood',
+      q: 'When you look at your balance sheet right now, do you understand what every single account represents and why it has the balance it does?',
+      why: "This is the gut-check question. Your balance sheet is a snapshot of everything your business owns, owes, and is worth. If you can't explain every line — or if some accounts look unfamiliar — that's a sign that something has been miscoded or misunderstood.",
+      howTitle: 'How to Check',
+      steps: [
+        'Open your <strong>Balance Sheet</strong> in QBO right now',
+        'Go line by line — Assets, Liabilities, Equity',
+        'For each account, ask: do I know what this is, why it has this balance, and is it accurate?',
+        "Count how many accounts you genuinely can't explain"
+      ],
+      answers: [
+        { icon: '✅', text: 'Yes — I understand every account on my balance sheet', val: 'yes', pts: 0 },
+        { icon: '😬', text: "No — there are accounts I can't explain", val: 'no', pts: 2 },
+        { icon: '🤷', text: "Not Sure — I haven't looked at it that closely", val: 'notsure', pts: 1 }
+      ],
+      yes: "There are accounts on your balance sheet you can't explain — unknown balances are the definition of a dead body in the books.",
+      notsure: "You haven't reviewed your balance sheet line by line — it's impossible to know what's hiding there until you do."
+    }
+  ];
+
+  var TOTAL_Q = QUESTIONS.length;
+  var MAX_SCORE = TOTAL_Q * 2;
+
+  /* ────────────────────────────────────────────────────────────────
+     BOOT — idempotent, so a GHL re-render can't double-bind or throw
+     ──────────────────────────────────────────────────────────────── */
+  function boot() {
+    var root = document.getElementById('bsa-app');
+    if (!root || root.getAttribute('data-bsa-ready') === '1') return;
+    root.setAttribute('data-bsa-ready', '1');
+    init(root);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+  window.addEventListener('load', boot);
+
+  function init(root) {
+    var answers = {};                 // { 1: {val, pts, idx}, ... }
+    var current = 1;
+    var unlocked = false;
+
+    if (REMEMBER_UNLOCK) {
+      try { unlocked = localStorage.getItem('bsa_unlocked') === '1'; } catch (e) {}
+    }
+
+    // Scoped element lookup — no global ids, nothing to collide with GHL.
+    function el(name) { return root.querySelector('[data-bsa-el="' + name + '"]'); }
+
+    loadFont();
+    if (el('cta-btn')) el('cta-btn').setAttribute('href', BOOKING_URL);
+    renderQuestions();
+    bindEvents();
+
+    /* ── FONT ─────────────────────────────────────────────────── */
+    function loadFont() {
+      if (document.getElementById('bsa-font-link')) return;
+      try {
+        var link = document.createElement('link');
+        link.id = 'bsa-font-link';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap';
+        (document.head || document.body).appendChild(link);
+      } catch (e) {}
+    }
+
+    /* ── QUESTION MARKUP ──────────────────────────────────────── */
+    function renderQuestions() {
+      var html = '';
+      for (var i = 0; i < TOTAL_Q; i++) {
+        var n = i + 1;
+        var item = QUESTIONS[i];
+        var last = (n === TOTAL_Q);
+
+        html += '<div class="bsa-question-card" data-bsa-q="' + n + '">';
+        html += '<div class="bsa-q-number">Question ' + n + ' of ' + TOTAL_Q + '</div>';
+        html += '<div class="bsa-q-text">' + item.q + '</div>';
+        html += '<div class="bsa-q-why">' + item.why + '</div>';
+
+        html += '<div class="bsa-qbo-box"><div class="bsa-qbo-box-title">' + item.howTitle + '</div><ol class="bsa-qbo-steps">';
+        for (var s = 0; s < item.steps.length; s++) html += '<li>' + item.steps[s] + '</li>';
+        html += '</ol></div>';
+
+        html += '<div class="bsa-answers">';
+        for (var a = 0; a < item.answers.length; a++) {
+          var ans = item.answers[a];
+          html += '<button type="button" class="bsa-answer-btn" data-bsa-action="answer"' +
+                  ' data-bsa-q="' + n + '" data-bsa-idx="' + a + '"' +
+                  ' data-bsa-val="' + ans.val + '" data-bsa-pts="' + ans.pts + '">' +
+                  '<span class="bsa-answer-icon">' + ans.icon + '</span>' +
+                  '<span>' + ans.text + '</span></button>';
+        }
+        html += '</div>';
+
+        html += '<div class="bsa-nav-row">';
+        html += (n === 1)
+          ? '<span class="bsa-nav-spacer"></span>'
+          : '<button type="button" class="bsa-btn-back" data-bsa-action="back" data-bsa-target="' + (n - 1) + '">&larr; Back</button>';
+        html += '<button type="button" class="bsa-btn-next" data-bsa-el="next-' + n + '" data-bsa-action="' +
+                (last ? 'results' : 'next') + '" data-bsa-target="' + (n + 1) + '">' +
+                (last ? 'See My Results &rarr;' : 'Next &rarr;') + '</button>';
+        html += '</div>';
+
+        html += '</div>';
+      }
+      el('quiz-screen').innerHTML = html;
+    }
+
+    /* ── EVENTS (delegated — survives re-renders, no inline onclick) ── */
+    function bindEvents() {
+      root.addEventListener('click', function (ev) {
+        var target = ev.target && ev.target.closest ? ev.target.closest('[data-bsa-action]') : null;
+        if (!target || !root.contains(target)) return;
+        var action = target.getAttribute('data-bsa-action');
+
+        if (action === 'answer') { ev.preventDefault(); onAnswer(target); return; }
+        if (action === 'next')   { ev.preventDefault(); showQuestion(+target.getAttribute('data-bsa-target')); return; }
+        if (action === 'back')   { ev.preventDefault(); showQuestion(+target.getAttribute('data-bsa-target')); return; }
+        if (action === 'start')  { ev.preventDefault(); startQuiz(); return; }
+        if (action === 'results'){ ev.preventDefault(); showResults(); return; }
+        if (action === 'unlock') { ev.preventDefault(); submitLead(); return; }
+        if (action === 'retake') { ev.preventDefault(); retake(); return; }
+        if (action === 'download') { ev.preventDefault(); downloadPDF(); return; }
+      });
+
+      // Enter key submits the email wall (there is no <form> to do it)
+      [el('lead-name'), el('lead-email')].forEach(function (input) {
+        if (!input) return;
+        input.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.keyCode === 13) { ev.preventDefault(); submitLead(); }
+        });
+      });
+    }
+
+    /* ── SCREENS ──────────────────────────────────────────────── */
+    function setScreen(name) { root.setAttribute('data-screen', name); }
+
+    function scrollToTop() {
+      try {
+        var top = root.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - SCROLL_OFFSET;
+        if (top < 0) top = 0;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      } catch (e) {
+        try { window.scrollTo(0, 0); } catch (e2) {}
+      }
+    }
+
+    function startQuiz() {
+      setScreen('quiz');
+      showQuestion(1);
+    }
+
+    function showQuestion(n) {
+      if (n < 1) n = 1;
+      if (n > TOTAL_Q) { showResults(); return; }
+      current = n;
+
+      var cards = root.querySelectorAll('.bsa-question-card');
+      for (var i = 0; i < cards.length; i++) cards[i].classList.remove('bsa-active');
+      var card = root.querySelector('.bsa-question-card[data-bsa-q="' + n + '"]');
+      if (card) card.classList.add('bsa-active');
+
+      var pct = Math.round(((n - 1) / TOTAL_Q) * 100);
+      el('progress-fill').style.width = pct + '%';
+      el('progress-label').textContent = n + ' of ' + TOTAL_Q;
+
+      if (answers[n]) paintSelection(n, answers[n].idx, answers[n].pts);
+      scrollToTop();
+    }
+
+    /* ── ANSWERING ────────────────────────────────────────────── */
+    function onAnswer(btn) {
+      var n   = +btn.getAttribute('data-bsa-q');
+      var idx = +btn.getAttribute('data-bsa-idx');
+      var pts = +btn.getAttribute('data-bsa-pts');
+      answers[n] = { val: btn.getAttribute('data-bsa-val'), pts: pts, idx: idx };
+      paintSelection(n, idx, pts);
+    }
+
+    // Selected state is keyed to the answer INDEX (not its wording), so
+    // going Back always re-highlights the button the visitor actually
+    // clicked, and the colour follows the risk of the answer.
+    function paintSelection(n, idx, pts) {
+      var card = root.querySelector('.bsa-question-card[data-bsa-q="' + n + '"]');
+      if (!card) return;
+
+      var btns = card.querySelectorAll('.bsa-answer-btn');
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('bsa-sel-risk', 'bsa-sel-clear', 'bsa-sel-unsure');
+      }
+      if (btns[idx]) {
+        btns[idx].classList.add(pts === 2 ? 'bsa-sel-risk' : pts === 1 ? 'bsa-sel-unsure' : 'bsa-sel-clear');
+      }
+      var next = el('next-' + n);
+      if (next) next.classList.add('bsa-enabled');
+    }
+
+    /* ── RESULTS ──────────────────────────────────────────────── */
+    function totalScore() {
+      var t = 0;
+      for (var n = 1; n <= TOTAL_Q; n++) if (answers[n]) t += answers[n].pts;
+      return t;
+    }
+
+    function showResults() {
+      setScreen('results');
+
+      var total = totalScore();
+      var pct = Math.round((total / MAX_SCORE) * 100);
+      var riskClass, riskLabel, riskTitle, riskSubtitle;
+
+      if (pct >= 62) {
+        riskClass = 'bsa-critical';
+        riskLabel = 'Critical Risk';
+        riskTitle = 'Multiple Dead Bodies Found';
+        riskSubtitle = 'Your balance sheet has significant issues that need immediate attention. The good news: catching this now is far better than your tax preparer (or the IRS) finding it later.';
+      } else if (pct >= 38) {
+        riskClass = 'bsa-high';
+        riskLabel = 'High Risk';
+        riskTitle = 'Several Red Flags Detected';
+        riskSubtitle = 'Your books have real problems that are likely costing you money and creating tax exposure. A cleanup now will save you significantly more down the road.';
+      } else if (pct >= 15) {
+        riskClass = 'bsa-moderate';
+        riskLabel = 'Moderate Risk';
+        riskTitle = 'A Few Things Worth Investigating';
+        riskSubtitle = "Your balance sheet isn't a crime scene, but there are some issues worth looking at closely. Left alone, these tend to grow.";
+      } else {
+        riskClass = 'bsa-low';
+        riskLabel = 'Low Risk';
+        riskTitle = 'Your Books Look Pretty Healthy';
+        riskSubtitle = 'Nice work — your balance sheet appears to be in reasonable shape. A quick CPA review can confirm everything is as clean as it looks.';
+      }
+
+      el('risk-banner').className = 'bsa-risk-banner ' + riskClass;
+      el('risk-label').textContent = riskLabel;
+      el('risk-title').textContent = riskTitle;
+      el('risk-subtitle').textContent = riskSubtitle;
+      el('score-pill').textContent = 'Risk Score: ' + total + ' / ' + MAX_SCORE;
+
+      var redFlags = [], warnings = [], clears = [];
+      for (var n = 1; n <= TOTAL_Q; n++) {
+        var a = answers[n];
+        if (!a) continue;
+        var info = QUESTIONS[n - 1];
+        if (a.pts === 2)      redFlags.push({ label: info.label, desc: info.yes });
+        else if (a.pts === 1) warnings.push({ label: info.label, desc: info.notsure });
+        else                  clears.push({ label: info.clearLabel || info.label });
+      }
+
+      fillSection('red-flags', redFlags, 'bsa-red', '💀');
+      fillSection('warnings', warnings, 'bsa-yellow', '⚠️');
+      fillSection('clear', clears, 'bsa-green', '✅');
+
+      applyGate(redFlags.length, warnings.length);
+      scrollToTop();
+    }
+
+    function fillSection(key, list, cls, icon) {
+      var section = el(key + '-section');
+      var target  = el(key + '-list');
+      if (!section || !target) return;
+      if (!list.length) { section.style.display = 'none'; target.innerHTML = ''; return; }
+
+      var html = '';
+      for (var i = 0; i < list.length; i++) {
+        html += '<div class="bsa-finding-card ' + cls + '">' +
+                  '<div class="bsa-finding-icon">' + icon + '</div>' +
+                  '<div>' +
+                    '<div class="bsa-finding-name">' + escapeHtml(list[i].label) + '</div>' +
+                    (list[i].desc ? '<div class="bsa-finding-desc">' + escapeHtml(list[i].desc) + '</div>' : '') +
+                  '</div>' +
+                '</div>';
+      }
+      target.innerHTML = html;
+      section.style.display = 'block';
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    /* ── EMAIL WALL ───────────────────────────────────────────── */
+    function applyGate(deadCount, warnCount) {
+      var wall = el('email-wall'), body = el('report-body'), bar = el('download-bar');
+
+      if (deadCount > 0) {
+        el('wall-title').textContent = 'Unlock all ' + deadCount + ' ' + (deadCount === 1 ? 'dead body' : 'dead bodies') + ' we found';
+        el('wall-sub').textContent = "We've flagged " + deadCount + ' issue' + (deadCount === 1 ? '' : 's') + ' on your balance sheet' +
+          (warnCount ? ' plus ' + warnCount + ' more worth a closer look' : '') +
+          '. Enter your name and email to see every finding in detail and download your full PDF report.';
+      } else {
+        el('wall-title').textContent = 'Unlock your full autopsy report';
+        el('wall-sub').textContent = 'Enter your name and email to see your complete results in detail and download your full PDF report.';
+      }
+
+      if (unlocked) {
+        body.classList.remove('bsa-locked');
+        wall.classList.remove('bsa-show');
+        bar.classList.add('bsa-show');
+      } else {
+        body.classList.add('bsa-locked');
+        wall.classList.add('bsa-show');
+        bar.classList.remove('bsa-show');
+        try {
+          var saved = JSON.parse(localStorage.getItem('bsa_lead') || '{}');
+          if (saved.name)  el('lead-name').value  = saved.name;
+          if (saved.email) el('lead-email').value = saved.email;
+        } catch (e) {}
+      }
+    }
+
+    function submitLead() {
+      var nameEl = el('lead-name'), emailEl = el('lead-email');
+      var errEl = el('wall-err'), btn = el('lead-submit');
+
+      var name  = (nameEl.value || '').trim();
+      var email = (emailEl.value || '').trim();
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      nameEl.classList.toggle('bsa-err', !name);
+      emailEl.classList.toggle('bsa-err', !emailOk);
+      if (!name || !emailOk) { errEl.classList.add('bsa-show'); return; }
+      errEl.classList.remove('bsa-show');
+
+      btn.disabled = true;
+      btn.textContent = 'Unlocking…';
+
+      var parts = name.split(/\s+/);
+      var firstName = parts.shift();
+      var lastName  = parts.join(' ');
+
+      var total = totalScore();
+      var riskLevel = el('risk-label').textContent;
+      var deadBodies = [];
+      for (var n = 1; n <= TOTAL_Q; n++) {
+        if (answers[n] && answers[n].pts === 2) deadBodies.push(QUESTIONS[n - 1].label);
+      }
+
+      var ansText = { yes: 'Yes', no: 'No', notsure: 'Not sure' };
+      var lines = [];
+      lines.push('BALANCE SHEET AUTOPSY — RESPONSE SUMMARY');
+      lines.push('Risk Level: ' + riskLevel);
+      lines.push('Risk Score: ' + total + ' / ' + MAX_SCORE);
+      lines.push('Dead Bodies Found: ' + deadBodies.length);
+      lines.push('');
+      for (var q = 1; q <= TOTAL_Q; q++) {
+        var a = answers[q];
+        var pts = a ? a.pts : null;
+        var status = pts === 2 ? 'RED FLAG' : pts === 1 ? 'Needs review' : pts === 0 ? 'OK' : 'Not answered';
+        lines.push('Q' + q + '. ' + QUESTIONS[q - 1].label + ': ' + ((a && ansText[a.val]) || '—') + ' [' + status + ']');
+      }
+
+      var payload = {
+        name: name,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        risk_level: riskLevel,
+        risk_score: total + ' / ' + MAX_SCORE,
+        dead_bodies: deadBodies,
+        dead_body_count: deadBodies.length,
+        all_responses: lines.join('\n'),
+        source: 'Balance Sheet Autopsy',
+        page_url: (window.location && window.location.href) || ''
+      };
+
+      // GHL's inbound webhook returns access-control-allow-origin:*, so a
+      // plain JSON POST works. Never block the visitor on the network.
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        if (REMEMBER_UNLOCK) {
+          try {
+            localStorage.setItem('bsa_unlocked', '1');
+            localStorage.setItem('bsa_lead', JSON.stringify({ name: name, email: email }));
+          } catch (e) {}
+        }
+        unlocked = true;
+        unlockReport();
+      }
+
+      setTimeout(finish, 4000); // hard stop: unlock even if the POST hangs
+
+      try {
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).then(finish)['catch'](finish);
+      } catch (e) {
+        finish();
+      }
+    }
+
+    function unlockReport() {
+      el('report-body').classList.remove('bsa-locked');
+      el('email-wall').classList.remove('bsa-show');
+      el('download-bar').classList.add('bsa-show');
+      var btn = el('lead-submit');
+      btn.disabled = false;
+      btn.innerHTML = 'Unlock My Full Report &rarr;';
+      scrollToTop();
+    }
+
+    /* ── PDF (library is loaded on demand, never on page load) ─── */
+    function loadPdfLib(cb) {
+      if (window.html2pdf) { cb(true); return; }
+      var existing = document.getElementById('bsa-pdf-lib');
+      if (existing) {
+        existing.addEventListener('load', function () { cb(!!window.html2pdf); });
+        existing.addEventListener('error', function () { cb(false); });
+        return;
+      }
+      var s = document.createElement('script');
+      s.id = 'bsa-pdf-lib';
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js';
+      s.onload  = function () { cb(!!window.html2pdf); };
+      s.onerror = function () { cb(false); };
+      (document.head || document.body).appendChild(s);
+    }
+
+    function downloadPDF() {
+      var btn = el('dl-btn');
+      var area = el('pdf-area');
+      var orig = btn.innerHTML;
+
+      btn.disabled = true;
+      btn.textContent = 'Preparing PDF…';
+
+      function reset() { btn.disabled = false; btn.innerHTML = orig; }
+
+      loadPdfLib(function (ok) {
+        if (!ok || !window.html2pdf) { reset(); window.print(); return; }
+        var opt = {
+          margin:      [10, 10, 10, 10],
+          filename:    'Balance-Sheet-Autopsy-Report.pdf',
+          image:       { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: '#F5F3F0' },
+          jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak:   { mode: ['css', 'legacy'] }
+        };
+        window.html2pdf().set(opt).from(area).save()
+          .then(reset)['catch'](function () { reset(); window.print(); });
+      });
+    }
+
+    /* ── RESET ────────────────────────────────────────────────── */
+    function retake() {
+      answers = {};
+      current = 1;
+
+      var sel = root.querySelectorAll('.bsa-answer-btn');
+      for (var i = 0; i < sel.length; i++) {
+        sel[i].classList.remove('bsa-sel-risk', 'bsa-sel-clear', 'bsa-sel-unsure');
+      }
+      var nexts = root.querySelectorAll('.bsa-btn-next');
+      for (var j = 0; j < nexts.length; j++) nexts[j].classList.remove('bsa-enabled');
+
+      fillSection('red-flags', [], 'bsa-red', '');
+      fillSection('warnings', [], 'bsa-yellow', '');
+      fillSection('clear', [], 'bsa-green', '');
+
+      el('progress-fill').style.width = '0%';
+      el('progress-label').textContent = '1 of ' + TOTAL_Q;
+
+      setScreen('landing');
+      scrollToTop();
+    }
+  }
+})();
+</script>
